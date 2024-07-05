@@ -1,0 +1,30 @@
+services:
+  mongodb:
+    image: mongo:latest
+    restart: always
+    container_name: mongodb
+    ports:
+      - "27017:27017"
+    volumes:
+      - ./mongodb/data:/data/db
+
+  redis:
+    image: redis
+    container_name: redis
+    ports:
+      - "6379:6379"
+
+  ms-parquimetro-control:
+    container_name: ms-parquimetro-control
+    build: .
+    ports:
+      - "8091:8091"
+    depends_on:
+      - mongodb
+      - redis
+    environment:
+      - MONGODB_HOST=mongodb:27017
+
+networks:
+  default:
+    name: parquimetro-network
