@@ -1,5 +1,8 @@
 package com.fiap.ms_parquimetro_control.repository.entity;
 
+import com.fiap.ms_parquimetro_control.repository.enums.StatusEnum;
+import com.fiap.ms_parquimetro_control.repository.enums.TipoEstacionamentoEnum;
+import com.fiap.ms_parquimetro_control.repository.enums.TipoPagamentoEnum;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
@@ -16,8 +19,13 @@ public class Estacionamento {
 
     @Id
     private String id;
+    private String placa;
     private LocalDateTime dataHoraEntrada;
     private LocalDateTime dataHoraSaida;
-    private int tempoFixo;
-    private double valorCalculado;
+    private Integer tempoFixo;
+    private Double valorCalculado;
+    private TipoEstacionamentoEnum tipo;
+    private StatusEnum status;
+    private TipoPagamentoEnum pagamento;
+    private String observacoes;
 }
