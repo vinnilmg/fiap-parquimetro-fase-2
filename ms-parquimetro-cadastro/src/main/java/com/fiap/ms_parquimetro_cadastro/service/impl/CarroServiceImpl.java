@@ -16,10 +16,11 @@ import static java.util.UUID.fromString;
 public class CarroServiceImpl implements CarroService {
 
     private final CarroRepository carroRepository;
-    private CarroMapper carroMapper;
+    private final CarroMapper carroMapper;
 
-    public CarroServiceImpl(CarroRepository carroRepository) {
+    public CarroServiceImpl(CarroRepository carroRepository, CarroMapper carroMapper) {
         this.carroRepository = carroRepository;
+        this.carroMapper = carroMapper;
     }
 
     @Override
@@ -40,7 +41,7 @@ public class CarroServiceImpl implements CarroService {
     @Override
     public CarroResponse save(CarroRequest carro) {
         if(carroRepository.existsCarroByPlaca(Objects.requireNonNull(carro.getPlaca()))) {
-            // implementar exception costumizada
+            // implementar exception customizada
             throw new RuntimeException("já existe carro com essa placa");
         }
         return carroMapper.CarroEntityToResponse(carroRepository.save(carroMapper.CarroRequestToEntity(carro)));
@@ -48,8 +49,8 @@ public class CarroServiceImpl implements CarroService {
 
     @Override
     public CarroResponse update(String UUID, CarroRequest carro) {
-        if(carroRepository.existsById(fromString(UUID))) {
-            // implementar exception costumizada
+        if(!carroRepository.existsById(fromString(UUID))) {
+            // implementar exception customizada
             throw new RuntimeException("carro inexistente");
         }
        var carroToUpdate = carroRepository.findById(fromString(UUID)).get();
@@ -57,6 +58,7 @@ public class CarroServiceImpl implements CarroService {
         carroToUpdate.setMarca(carro.getMarca());
         carroToUpdate.setModelo(carro.getModelo());
         carroToUpdate.setCor(carro.getCor());
+        carroToUpdate.setObservacoes(carro.getObservacoes());
         return carroMapper.CarroEntityToResponse(carroRepository.save(carroToUpdate));
     }
 
