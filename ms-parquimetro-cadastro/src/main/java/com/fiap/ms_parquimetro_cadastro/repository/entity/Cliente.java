@@ -19,17 +19,13 @@ public class Cliente {
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
-    @NotBlank
     private String nome;
 
-    @NotBlank
     @Column(unique = true)
     private String cnh;
 
-    @NotBlank
     private String telefone;
 
-    @NotBlank
     @Email
     private String email;
 
