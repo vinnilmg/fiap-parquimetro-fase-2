@@ -1,6 +1,6 @@
 package com.fiap.ms_parquimetro_control.config.exception;
 
-import com.fiap.ms_parquimetro_control.exception.CarAlreadyParkedException;
+import com.fiap.ms_parquimetro_control.exception.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.http.HttpStatus;
@@ -16,16 +16,31 @@ import java.util.List;
 @RestControllerAdvice
 public class ParquimetroControlExceptionHandler {
 
-    @ExceptionHandler({CarAlreadyParkedException.class})
+    @ExceptionHandler({
+            CarAlreadyParkedException.class,
+            InvalidParkingStatusException.class,
+            InvalidPaymentTypePix.class,
+            InvalidPaymentType.class
+    })
     public ResponseEntity<ApiError> handleBadRequestError(
-            final CarAlreadyParkedException e, final WebRequest request
+            final Exception e, final WebRequest request
     ) {
         log.info("Erro: {}", e.getMessage());
         final var apiError = makeApiErrorMessage(new ApiErrorMessage(e.getMessage()), HttpStatus.BAD_REQUEST);
         return ResponseEntity.status(apiError.getStatus()).body(apiError);
     }
 
-    @ExceptionHandler({MethodArgumentNotValidException.class})
+    @ExceptionHandler({
+            ParkingNotFoundException.class
+    })
+    public ResponseEntity<ApiError> handleNotFoundError(
+            final Exception e, final WebRequest request
+    ) {
+        final var apiError = makeApiErrorMessage(new ApiErrorMessage(e.getMessage()), HttpStatus.NOT_FOUND);
+        return ResponseEntity.status(apiError.getStatus()).body(apiError);
+    }
+
+    @ExceptionHandler({MethodArgumentNotValidException.class,})
     public ResponseEntity<Object> handleMethodArgumentNotValid(
             final MethodArgumentNotValidException e, final WebRequest request
     ) {

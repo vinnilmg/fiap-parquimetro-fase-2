@@ -4,7 +4,9 @@ import com.fiap.ms_parquimetro_control.repository.entity.Estacionamento;
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
+
 @Repository
 public interface EstacionamentoRepository extends MongoRepository<Estacionamento, Long> {
-    boolean existsByPlaca(String placa);
+    List<Estacionamento> findByPlaca(String placa);
 }

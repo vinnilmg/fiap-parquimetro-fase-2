@@ -2,8 +2,10 @@ package com.fiap.ms_parquimetro_control;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.data.mongodb.repository.config.EnableMongoRepositories;
 
 @SpringBootApplication
+@EnableMongoRepositories
 public class MsParquimetroControlApplication {
     public static void main(String[] args) {
         SpringApplication.run(MsParquimetroControlApplication.class, args);

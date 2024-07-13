@@ -19,7 +19,7 @@ public interface EstacionamentoMapper {
     @Mapping(target = "observacoes", source = "observacoes")
     @Mapping(target = "status", constant = "INICIADO")
     @Mapping(target = "tipo", constant = "HORA")
-    @Mapping(target = "valorCalculado", constant = "0")
+   // @Mapping(target = "valorCalculado", constant = "0")
     @Mapping(target = "dataHoraEntrada", expression = "java(LocalDateTime.now())")
     Estacionamento toEstacionamento(ParkingPerHourRequest request);
 }
