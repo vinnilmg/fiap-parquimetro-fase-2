@@ -54,11 +54,6 @@ public class Estacionamento {
             throw new InvalidPaymentTypePix();
         }
 
-        //TODO: Remover
-        this.setDataHoraSaida(LocalDateTime.now());
-        this.setValorCalculado(new BigDecimal(15));
-
-
         this.setPagamento(tipoPagamento);
         this.setStatus(StatusEnum.FINALIZADO);
     }
