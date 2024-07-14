@@ -19,12 +19,12 @@ public class CarroController {
         this.carroMapper = carroMapper;
     }
 
-    @GetMapping("/{id}")
+    @GetMapping("/id/{id}")
     public ResponseEntity<CarroResponse> findCarroById(@PathVariable String id) {
         CarroResponse carro = carroService.findById(id);
         return ResponseEntity.ok(carro);
     }
-    @GetMapping("/{placa}")
+    @GetMapping("/placa/{placa}")
     public ResponseEntity<CarroResponse> findCarroByPlaca(@PathVariable String placa) {
         CarroResponse carro = carroService.findCarroByPlaca(placa);
         return ResponseEntity.ok(carro);
