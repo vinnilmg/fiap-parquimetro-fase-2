@@ -1,7 +1,9 @@
 package com.fiap.ms_parquimetro_control.controller;
 
 import com.fiap.ms_parquimetro_control.controller.request.FinalizacaoRequest;
+import com.fiap.ms_parquimetro_control.controller.request.FixedParkingExitRequest;
 import com.fiap.ms_parquimetro_control.controller.request.ParkingPerHourRequest;
+import com.fiap.ms_parquimetro_control.controller.response.FixedParkingExitResponse;
 import com.fiap.ms_parquimetro_control.controller.response.ParkingPerHourResponse;
 import com.fiap.ms_parquimetro_control.controller.response.ParkingResponse;
 import com.fiap.ms_parquimetro_control.controller.response.PaymentReceiptResponse;
@@ -37,6 +39,11 @@ public class ParquimetroController {
                         .map(parkingResponseMapper::toParkingResponse)
                         .toList()
         );
+    }
+
+    @GetMapping(value = "/fixed")
+    public ResponseEntity<FixedParkingExitResponse> saidaEstacionamentoFixo(@Valid @RequestBody final FixedParkingExitRequest request){
+        return ResponseEntity.status(HttpStatus.MULTI_STATUS).build();
     }
 
     @PostMapping
