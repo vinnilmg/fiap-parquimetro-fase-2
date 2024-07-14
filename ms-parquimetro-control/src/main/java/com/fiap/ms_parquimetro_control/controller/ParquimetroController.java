@@ -41,7 +41,7 @@ public class ParquimetroController {
         );
     }
 
-    @GetMapping(value = "/fixed")
+    @GetMapping("/fixed")
     public ResponseEntity<FixedParkingExitResponse> saidaEstacionamentoFixo(@Valid @RequestBody final FixedParkingExitRequest request){
         return ResponseEntity.status(HttpStatus.MULTI_STATUS).build();
     }
