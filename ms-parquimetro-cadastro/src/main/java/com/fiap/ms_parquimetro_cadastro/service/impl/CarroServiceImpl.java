@@ -60,6 +60,12 @@ public class CarroServiceImpl implements CarroService {
         if (carroRepository.existsCarroByPlaca(Objects.requireNonNull(carro.getPlaca()))) {
             throw new PlacaJaUtilizadaException(carro.getPlaca());
         }
+        clienteRepository.findById(fromString(carro.getClienteId())).orElseThrow(() -> {
+                    throw new ClienteNotFoundException(carro.getClienteId());
+                }
+        );
+
+
         return carroMapper.CarroEntityToResponse(carroRepository.save(carroMapper.CarroRequestToEntity(carro)));
     }
 
