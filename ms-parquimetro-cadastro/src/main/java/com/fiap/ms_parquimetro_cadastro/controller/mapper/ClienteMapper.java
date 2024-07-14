@@ -10,15 +10,11 @@ import org.mapstruct.Mappings;
 @Mapper(componentModel = "spring")
 public interface ClienteMapper {
 
-    @Mappings({@Mapping(source = "clienteId", target = "cliente.id")})
     Cliente ClienteRequestToEntity(ClienteRequest request);
 
-    @Mappings({@Mapping(source = "cliente.id", target = "clienteId")})
     ClienteRequest ClienteEntityToRequest(Cliente entity);
 
-    @Mappings({@Mapping(source = "cliente.id", target = "clienteId")})
     ClienteResponse ClienteEntityToResponse(Cliente cliente);
 
-    @Mappings({@Mapping(source = "clienteId", target = "cliente.id")})
     Cliente ClienteResponseToEntity(ClienteResponse response);
 }
