@@ -33,5 +33,5 @@ public class CarroRequest {
     private String observacoes;
 
     @NotNull
-    private UUID clienteId;
+    private String clienteId;
 }

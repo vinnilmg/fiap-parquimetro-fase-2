@@ -3,6 +3,7 @@ package com.fiap.ms_parquimetro_cadastro.controller.resquest;
 import com.fiap.ms_parquimetro_cadastro.repository.enums.FormaPagamentoPreferidaEnum;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.*;
 
@@ -28,6 +29,6 @@ public class ClienteRequest {
     @Email(message = "O e-mail deve ser válido.")
     private String email;
 
-    @NotBlank(message = "A forma de pagamento preferida deve ser informada.")
+    @NotNull
     private FormaPagamentoPreferidaEnum formaPagamentoPreferida;
 }

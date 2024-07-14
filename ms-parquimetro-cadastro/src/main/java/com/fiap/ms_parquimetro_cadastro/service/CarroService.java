@@ -9,6 +9,8 @@ public interface CarroService {
 
     public CarroResponse findById(String UUID);
 
+    public CarroResponse findCarroByPlaca(String placa);
+
     public List<CarroResponse> findAll();
 
     public CarroResponse save(CarroRequest carro);

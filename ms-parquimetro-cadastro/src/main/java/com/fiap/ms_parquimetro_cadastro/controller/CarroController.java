@@ -20,13 +20,18 @@ public class CarroController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<CarroResponse> getCarroById(@PathVariable String id) {
+    public ResponseEntity<CarroResponse> findCarroById(@PathVariable String id) {
         CarroResponse carro = carroService.findById(id);
+        return ResponseEntity.ok(carro);
+    }
+    @GetMapping("/{placa}")
+    public ResponseEntity<CarroResponse> findCarroByPlaca(@PathVariable String placa) {
+        CarroResponse carro = carroService.findCarroByPlaca(placa);
         return ResponseEntity.ok(carro);
     }
 
     @GetMapping
-    public ResponseEntity<List<CarroResponse>> getAllCarros() {
+    public ResponseEntity<List<CarroResponse>> findAllCarros() {
         List<CarroResponse> carros = carroService.findAll();
         return ResponseEntity.ok(carros);
     }
