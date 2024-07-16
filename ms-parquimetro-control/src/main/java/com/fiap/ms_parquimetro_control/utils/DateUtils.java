@@ -2,10 +2,11 @@ package com.fiap.ms_parquimetro_control.utils;
 
 import lombok.extern.slf4j.Slf4j;
 
+import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.concurrent.TimeUnit;
 
-import static java.time.Duration.between;
 import static java.util.Objects.isNull;
 
 @Slf4j
@@ -22,20 +23,19 @@ public class DateUtils {
     }
 
     public static String calculaPeriodoEntreDatas(final LocalDateTime date1, final LocalDateTime date2) {
-        final var builder = new StringBuilder();
+        var millis = Duration.between(date1, date2).toMillis();
 
-        final var days = between(date1, date2).toDays();
-        if (days > 0) builder.append(days).append("d ");
+        final var days = TimeUnit.MILLISECONDS.toDays(millis);
+        millis -= TimeUnit.DAYS.toMillis(days);
 
-        final var hours = between(date1, date2).toHours();
-        if (hours > 0) builder.append(hours).append("h ");
+        final var hours = TimeUnit.MILLISECONDS.toHours(millis);
+        millis -= TimeUnit.HOURS.toMillis(hours);
 
-        final var minutes = between(date1, date2).toMinutes();
-        if (minutes > 0) builder.append(minutes).append("m ");
+        final var minutes = TimeUnit.MILLISECONDS.toMinutes(millis);
+        millis -= TimeUnit.MINUTES.toMillis(minutes);
 
-        final var seconds = between(date1, date2).toSeconds();
-        if (seconds > 0) builder.append(seconds).append("s");
+        final var seconds = TimeUnit.MILLISECONDS.toSeconds(millis);
 
-        return builder.toString();
+        return String.format("%02d:%02d:%02d", hours, minutes, seconds);
     }
 }

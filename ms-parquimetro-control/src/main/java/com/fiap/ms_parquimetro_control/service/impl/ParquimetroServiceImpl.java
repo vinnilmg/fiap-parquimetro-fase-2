@@ -3,6 +3,8 @@ package com.fiap.ms_parquimetro_control.service.impl;
 import com.fiap.ms_parquimetro_control.controller.request.FinalizacaoRequest;
 import com.fiap.ms_parquimetro_control.controller.request.ParkingPerHourRequest;
 import com.fiap.ms_parquimetro_control.exception.CarAlreadyParkedException;
+import com.fiap.ms_parquimetro_control.exception.InvalidParkingStatusException;
+import com.fiap.ms_parquimetro_control.exception.InvalidPaymentTypePix;
 import com.fiap.ms_parquimetro_control.exception.ParkingNotFoundException;
 import com.fiap.ms_parquimetro_control.repository.EstacionamentoRepository;
 import com.fiap.ms_parquimetro_control.repository.entity.Estacionamento;
@@ -15,6 +17,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+
+import static com.fiap.ms_parquimetro_control.repository.enums.StatusEnum.PAGAMENTO_PENDENTE;
+import static com.fiap.ms_parquimetro_control.repository.enums.TipoEstacionamentoEnum.FIXO;
+import static com.fiap.ms_parquimetro_control.repository.enums.TipoPagamentoEnum.PIX;
 
 @Slf4j
 @Service
@@ -46,11 +52,19 @@ public class ParquimetroServiceImpl implements ParquimetroService {
         final var tipoPagamento = TipoPagamentoEnum.toEnum(request.getTipoPagamento());
         return repository.findByPlaca(request.getPlaca())
                 .stream()
-                .filter(estacionamento -> !estacionamento.getStatus().equals(StatusEnum.FINALIZADO))
+                .filter(parking -> !parking.getStatus().equals(StatusEnum.FINALIZADO))
                 .findFirst()
-                .map(estacionamento -> {
-                    estacionamento.finalizaEstacionamento(tipoPagamento);
-                    return repository.save(estacionamento);
+                .map(parking -> {
+                    if (!parking.getStatus().equals(PAGAMENTO_PENDENTE)) {
+                        throw new InvalidParkingStatusException();
+                    }
+
+                    if (tipoPagamento.equals(PIX) && !parking.getTipo().equals(FIXO)) {
+                        throw new InvalidPaymentTypePix();
+                    }
+
+                    parking.finalizaEstacionamento(tipoPagamento);
+                    return repository.save(parking);
                 })
                 .orElseThrow(ParkingNotFoundException::new);
     }
