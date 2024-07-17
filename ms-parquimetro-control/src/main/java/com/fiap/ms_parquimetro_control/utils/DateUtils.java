@@ -22,6 +22,11 @@ public class DateUtils {
                 .format(time);
     }
 
+    public static long calculaHorasEntreDatas(final LocalDateTime date1, final LocalDateTime date2) {
+        final var millis = Duration.between(date1, date2).toMillis();
+        return TimeUnit.MILLISECONDS.toHours(millis);
+    }
+
     public static String calculaPeriodoEntreDatas(final LocalDateTime date1, final LocalDateTime date2) {
         var millis = Duration.between(date1, date2).toMillis();
 
@@ -37,5 +42,9 @@ public class DateUtils {
         final var seconds = TimeUnit.MILLISECONDS.toSeconds(millis);
 
         return String.format("%02d:%02d:%02d", hours, minutes, seconds);
+    }
+
+    public static LocalDateTime addHours(final LocalDateTime time, final int hours) {
+        return time.plusHours(hours);
     }
 }
