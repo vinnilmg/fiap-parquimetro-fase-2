@@ -7,6 +7,7 @@ import com.fiap.ms_parquimetro_control.controller.response.FixedParkingExitRespo
 import com.fiap.ms_parquimetro_control.controller.response.ParkingPerHourResponse;
 import com.fiap.ms_parquimetro_control.controller.response.ParkingResponse;
 import com.fiap.ms_parquimetro_control.controller.response.PaymentReceiptResponse;
+import com.fiap.ms_parquimetro_control.controller.response.mapper.FixedParkingExitResponseMapper;
 import com.fiap.ms_parquimetro_control.controller.response.mapper.ParkingPerHourResponseMapper;
 import com.fiap.ms_parquimetro_control.controller.response.mapper.ParkingResponseMapper;
 import com.fiap.ms_parquimetro_control.controller.response.mapper.PaymentReceiptResponseMapper;
@@ -31,6 +32,9 @@ public class ParquimetroController {
     @Autowired
     private ParkingResponseMapper parkingResponseMapper;
 
+    @Autowired
+    private FixedParkingExitResponseMapper fixedParkingExitResponseMapper;
+
     @GetMapping
     public ResponseEntity<List<ParkingResponse>> buscaControleEstacionamento() {
         return ResponseEntity.ok(
@@ -43,7 +47,8 @@ public class ParquimetroController {
 
     @GetMapping("/fixed")
     public ResponseEntity<FixedParkingExitResponse> saidaEstacionamentoFixo(@Valid @RequestBody final FixedParkingExitRequest request){
-        return ResponseEntity.status(HttpStatus.MULTI_STATUS).build();
+        final var parking = service.saidaEstacionamentoFixo(request);
+        return ResponseEntity.ok().body(fixedParkingExitResponseMapper.toFixedParkingExitResponse(parking));
     }
 
     @PostMapping

@@ -1,6 +1,7 @@
 package com.fiap.ms_parquimetro_control.service.impl;
 
 import com.fiap.ms_parquimetro_control.controller.request.FinalizacaoRequest;
+import com.fiap.ms_parquimetro_control.controller.request.FixedParkingExitRequest;
 import com.fiap.ms_parquimetro_control.controller.request.ParkingPerHourRequest;
 import com.fiap.ms_parquimetro_control.exception.CarAlreadyParkedException;
 import com.fiap.ms_parquimetro_control.exception.ParkingNotFoundException;
@@ -53,5 +54,9 @@ public class ParquimetroServiceImpl implements ParquimetroService {
                     return repository.save(estacionamento);
                 })
                 .orElseThrow(ParkingNotFoundException::new);
+    }
+
+    public Estacionamento saidaEstacionamentoFixo(final FixedParkingExitRequest request) {
+        return repository.findByPlaca(request.getPlaca()).orElseThrow(ParkingNotFoundException::new);
     }
 }
