@@ -1,7 +1,9 @@
 package com.fiap.ms_parquimetro_control.service.impl;
 
 import com.fiap.ms_parquimetro_control.controller.request.FinalizacaoRequest;
+import com.fiap.ms_parquimetro_control.controller.request.ParkingFixRequest;
 import com.fiap.ms_parquimetro_control.controller.request.ParkingPerHourRequest;
+import com.fiap.ms_parquimetro_control.controller.request.ParkingSaidaVariavelRequest;
 import com.fiap.ms_parquimetro_control.exception.CarAlreadyParkedException;
 import com.fiap.ms_parquimetro_control.exception.InvalidParkingStatusException;
 import com.fiap.ms_parquimetro_control.exception.InvalidPaymentTypePix;
@@ -67,5 +69,26 @@ public class ParquimetroServiceImpl implements ParquimetroService {
                     return repository.save(parking);
                 })
                 .orElseThrow(ParkingNotFoundException::new);
+    }
+
+    @Override
+    public Estacionamento novoEstacionamentoFixo(final ParkingFixRequest request) {
+        if (repository.existsByPlaca(request.getPlaca())) {
+            throw new CarAlreadyParkedException(request.getPlaca());
+        }
+
+        return repository.insert(estacionamentoFixMapper.toEstacionamentoFix(request));
+    }
+
+    @Override
+    public Estacionamento registrarSaidaVariavel(ParkingSaidaVariavelRequest request) {
+
+        if (!repository.existsByPlaca(request.getPlaca())) {
+            throw new RuntimeException("Placa não cadastrada.");
+        }
+        Estacionamento placaToUpdate = repository.findByPlaca(request.getPlaca());
+
+        return repository.save(estacionamentoSaidaVariavelMapper.toEstacionamentoSaidaVariavel(placaToUpdate));
+
     }
 }
