@@ -5,6 +5,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.time.Duration;
 import java.time.LocalDateTime;
 
 @Getter
@@ -16,5 +17,5 @@ public class FixedParkingExitResponse {
     private LocalDateTime dataHoraEntrada;
     private LocalDateTime dataHoraSaida;
     private Integer tempoFixo;
-    private Double horasExcedentes;
+    private Double horasExcedentes = 0.0;
 }

@@ -9,5 +9,6 @@ import org.mapstruct.Mapping;
 public interface FixedParkingExitResponseMapper {
     @Mapping(target = "placa", source = "placa")
     @Mapping(target = "dataHoraSaida", expression = "java(java.time.LocalDateTime.now())")
+//    @Mapping(target = "horasExcedentes", expression = "java(calculoHorasExcedentes(estacionamento.getDataHoraEntrada(), java.time.LocalDateTime.now()))")
     FixedParkingExitResponse toFixedParkingExitResponse(Estacionamento estacionamento);
 }
