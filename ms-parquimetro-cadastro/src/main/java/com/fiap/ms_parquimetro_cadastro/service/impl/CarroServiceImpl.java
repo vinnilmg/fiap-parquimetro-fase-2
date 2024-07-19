@@ -18,6 +18,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
+import static com.fiap.ms_parquimetro_cadastro.utils.ValidateUUID.isValidUUID;
 import static java.util.UUID.fromString;
 
 @Service
@@ -35,6 +36,7 @@ public class CarroServiceImpl implements CarroService {
 
     @Override
     public CarroResponse findById(String UUID) {
+        isValidUUID(UUID);
         return carroRepository.findById(fromString(UUID))
                 .map(carroMapper::CarroEntityToResponse)
                 .orElseThrow(() -> new EntityNotFoundException(UUID));
@@ -57,6 +59,7 @@ public class CarroServiceImpl implements CarroService {
 
     @Override
     public CarroResponse save(CarroRequest carro) {
+        isValidUUID(carro.getClienteId());
         if (carroRepository.existsCarroByPlaca(Objects.requireNonNull(carro.getPlaca()))) {
             throw new PlacaJaUtilizadaException(carro.getPlaca());
         }
@@ -71,6 +74,7 @@ public class CarroServiceImpl implements CarroService {
 
     @Override
     public CarroResponse update(String UUID, CarroRequest carro) {
+        isValidUUID(UUID);
         if (!carroRepository.existsById(fromString(UUID))) {
             throw new CarroNotFoundException(UUID);
         }
@@ -94,6 +98,7 @@ public class CarroServiceImpl implements CarroService {
 
     @Override
     public void deleteById(String UUID) {
+        isValidUUID(UUID);
         carroRepository.deleteById(fromString(UUID));
     }
 }
