@@ -32,6 +32,6 @@ public class CarroRequest {
     @Size(max = 500, message = "Observações devem ter no máximo 500 caracteres")
     private String observacoes;
 
-    @NotNull
+    @NotBlank
     private String clienteId;
 }
