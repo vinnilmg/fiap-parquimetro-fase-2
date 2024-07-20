@@ -40,13 +40,43 @@ public class ParquimetroServiceImpl implements ParquimetroService {
 
     @Override
     public Estacionamento novoEstacionamentoPorHora(final ParkingPerHourRequest request) {
-        if (repository.findByPlaca(request.getPlaca())
-                .stream()
-                .anyMatch(estacionamento -> !estacionamento.getStatus().equals(StatusEnum.FINALIZADO))
-        ) {
+        if (existsEstacionamentoEmAberto(request.getPlaca())) {
             throw new CarAlreadyParkedException(request.getPlaca());
         }
         return repository.insert(estacionamentoMapper.toEstacionamento(request));
+    }
+
+    @Override
+    public Estacionamento novoEstacionamentoFixo(final ParkingFixRequest request) {
+        // TODO: Integracao com o serviço de cadastro utilizando a placa
+        // Se nao estiver cadastrado -> Erro
+        // Se existir: Pegar a forma de pagamento preferida que está no cadastro do cliente e inserir no ticket (campo pagamento)
+
+        if (!(request.getTempoFixo() > 1)) {
+            throw new RuntimeException("O tempo fixo deve ser maior do que 1 hora."); // Ajusta exception
+        }
+
+        if (existsEstacionamentoEmAberto(request.getPlaca())) {
+            throw new CarAlreadyParkedException(request.getPlaca());
+        }
+        return repository.insert(estacionamentoMapper.toEstacionamento(request));
+    }
+
+    @Override
+    public Estacionamento registrarSaidaVariavel(ParkingSaidaVariavelRequest request) {
+        // TODO: Regras:
+        // 1: Existe um estacionamento com status INICIADO para a placa?
+        // Se sim: Obtem o registro q está iniciado para atualiza-lo
+        // Se nao: Erro
+
+        /*if (!repository.existsByPlaca(request.getPlaca())) {
+            throw new RuntimeException("Placa não cadastrada.");
+        }
+        Estacionamento placaToUpdate = repository.findByPlaca(request.getPlaca());
+
+        return repository.save(estacionamentoMapper.toEstacionamentoSaidaVariavel(placaToUpdate));*/
+
+        return null;
     }
 
     @Override
@@ -71,24 +101,9 @@ public class ParquimetroServiceImpl implements ParquimetroService {
                 .orElseThrow(ParkingNotFoundException::new);
     }
 
-    @Override
-    public Estacionamento novoEstacionamentoFixo(final ParkingFixRequest request) {
-        if (repository.existsByPlaca(request.getPlaca())) {
-            throw new CarAlreadyParkedException(request.getPlaca());
-        }
-
-        return repository.insert(estacionamentoFixMapper.toEstacionamentoFix(request));
-    }
-
-    @Override
-    public Estacionamento registrarSaidaVariavel(ParkingSaidaVariavelRequest request) {
-
-        if (!repository.existsByPlaca(request.getPlaca())) {
-            throw new RuntimeException("Placa não cadastrada.");
-        }
-        Estacionamento placaToUpdate = repository.findByPlaca(request.getPlaca());
-
-        return repository.save(estacionamentoSaidaVariavelMapper.toEstacionamentoSaidaVariavel(placaToUpdate));
-
+    private boolean existsEstacionamentoEmAberto(final String placa) {
+        return repository.findByPlaca(placa)
+                .stream()
+                .anyMatch(estacionamento -> !estacionamento.getStatus().equals(StatusEnum.FINALIZADO));
     }
 }

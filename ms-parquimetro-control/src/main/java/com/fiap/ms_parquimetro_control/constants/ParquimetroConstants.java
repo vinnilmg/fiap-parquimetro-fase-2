@@ -1,10 +1,9 @@
 package com.fiap.ms_parquimetro_control.constants;
 
-import java.math.BigDecimal;
-
 public class ParquimetroConstants {
-    private ParquimetroConstants() {}
+    private ParquimetroConstants() {
+    }
 
-    public static final BigDecimal VALOR_HORA_TIPO_FIXO = BigDecimal.valueOf(10);
-    public static final BigDecimal VALOR_HORA_TIPO_VARIAVEL = BigDecimal.valueOf(15);
+    public static final double VALOR_HORA_TIPO_FIXO = 10;
+    public static final double VALOR_HORA_TIPO_VARIAVEL = 15;
 }

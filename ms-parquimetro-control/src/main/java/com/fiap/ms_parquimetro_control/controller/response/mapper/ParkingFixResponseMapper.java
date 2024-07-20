@@ -5,6 +5,6 @@ import com.fiap.ms_parquimetro_control.repository.entity.Estacionamento;
 import org.mapstruct.Mapper;
 
 @Mapper(componentModel = "spring")
-public interface PakingFixResponseMapper {
+public interface ParkingFixResponseMapper {
     ParkingFixResponse toParkingFixResponse(Estacionamento estacionamento);
 }
