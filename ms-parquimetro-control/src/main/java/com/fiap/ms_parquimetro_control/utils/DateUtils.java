@@ -27,11 +27,14 @@ public class DateUtils {
         return TimeUnit.MILLISECONDS.toHours(millis);
     }
 
+    public static long calculaMinutosEntreDatas(final LocalDateTime date1, final LocalDateTime date2, final long hours) {
+        var millis = Duration.between(date1, date2).toMillis();
+        millis -= TimeUnit.HOURS.toMillis(hours);
+        return TimeUnit.MILLISECONDS.toMinutes(millis);
+    }
+
     public static String calculaPeriodoEntreDatas(final LocalDateTime date1, final LocalDateTime date2) {
         var millis = Duration.between(date1, date2).toMillis();
-
-        final var days = TimeUnit.MILLISECONDS.toDays(millis);
-        millis -= TimeUnit.DAYS.toMillis(days);
 
         final var hours = TimeUnit.MILLISECONDS.toHours(millis);
         millis -= TimeUnit.HOURS.toMillis(hours);
