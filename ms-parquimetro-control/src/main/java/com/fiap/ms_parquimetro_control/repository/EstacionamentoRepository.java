@@ -9,5 +9,5 @@ import java.util.Optional;
 
 @Repository
 public interface EstacionamentoRepository extends MongoRepository<Estacionamento, Long> {
-    Optional<Estacionamento> findByPlaca(String placa);
+    List<Estacionamento> findByPlaca(String placa);
 }

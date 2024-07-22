@@ -59,6 +59,6 @@ public class ParquimetroServiceImpl implements ParquimetroService {
     }
 
     public Estacionamento saidaEstacionamentoFixo(final FixedParkingExitRequest request) {
-        return repository.findByPlaca(request.getPlaca()).orElseThrow(ParkingNotFoundException::new);
+        return repository.findByPlaca(request.getPlaca()).stream().filter(estacionamento -> !estacionamento.getStatus().equals(StatusEnum.FINALIZADO)).findFirst().orElseThrow(ParkingNotFoundException::new);
     }
 }
