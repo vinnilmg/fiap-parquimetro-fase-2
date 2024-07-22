@@ -1,6 +1,7 @@
 package com.fiap.ms_parquimetro_cadastro.config.exception;
 
 import com.fiap.ms_parquimetro_cadastro.exception.carro.CarroNotFoundException;
+import com.fiap.ms_parquimetro_cadastro.exception.carro.CarroPlacaNotFoundException;
 import com.fiap.ms_parquimetro_cadastro.exception.carro.PlacaJaUtilizadaException;
 import com.fiap.ms_parquimetro_cadastro.exception.cliente.ClienteNotFoundException;
 import com.fiap.ms_parquimetro_cadastro.exception.cliente.UUIDClienteInvalidException;
@@ -14,7 +15,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
-    @ExceptionHandler({CarroNotFoundException.class, ClienteNotFoundException.class})
+    @ExceptionHandler({CarroNotFoundException.class, ClienteNotFoundException.class, CarroPlacaNotFoundException.class})
     @ResponseStatus(HttpStatus.NOT_FOUND)
     public ResponseEntity<CustomErrorResponse> handleNotFoundException(CustomNotFoundException ex) {
         CustomErrorResponse response = new CustomErrorResponse(ex.getErrorCode(), ex.getMessage());
