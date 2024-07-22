@@ -6,7 +6,6 @@ import com.fiap.ms_parquimetro_control.dao.EstacionamentoDao;
 import com.fiap.ms_parquimetro_control.exception.CarAlreadyParkedException;
 import com.fiap.ms_parquimetro_control.exception.InvalidParkingStatusException;
 import com.fiap.ms_parquimetro_control.exception.InvalidPaymentTypePix;
-import com.fiap.ms_parquimetro_control.repository.EstacionamentoRepository;
 import com.fiap.ms_parquimetro_control.repository.entity.Estacionamento;
 import com.fiap.ms_parquimetro_control.repository.enums.TipoPagamentoEnum;
 import com.fiap.ms_parquimetro_control.repository.mapper.EstacionamentoMapper;
@@ -25,9 +24,6 @@ import static com.fiap.ms_parquimetro_control.repository.enums.TipoPagamentoEnum
 public class ParquimetroServiceImpl implements ParquimetroService {
     @Autowired
     private EstacionamentoDao dao;
-
-    @Autowired
-    private EstacionamentoRepository repository;
 
     @Autowired
     private EstacionamentoMapper estacionamentoMapper;
