@@ -1,6 +1,7 @@
 package com.fiap.ms_parquimetro_control.service;
 
 import com.fiap.ms_parquimetro_control.controller.request.FinalizacaoRequest;
+import com.fiap.ms_parquimetro_control.controller.request.FixedParkingExitRequest;
 import com.fiap.ms_parquimetro_control.controller.request.ParkingPerHourRequest;
 import com.fiap.ms_parquimetro_control.repository.entity.Estacionamento;
 
@@ -12,4 +13,6 @@ public interface ParquimetroService {
     Estacionamento novoEstacionamentoPorHora(ParkingPerHourRequest request);
 
     Estacionamento finalizaEstacionamento(FinalizacaoRequest request);
+
+    Estacionamento saidaEstacionamentoFixo(FixedParkingExitRequest request);
 }

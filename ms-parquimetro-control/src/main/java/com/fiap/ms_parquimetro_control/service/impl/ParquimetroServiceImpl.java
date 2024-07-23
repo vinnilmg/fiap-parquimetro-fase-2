@@ -1,6 +1,7 @@
 package com.fiap.ms_parquimetro_control.service.impl;
 
 import com.fiap.ms_parquimetro_control.controller.request.FinalizacaoRequest;
+import com.fiap.ms_parquimetro_control.controller.request.FixedParkingExitRequest;
 import com.fiap.ms_parquimetro_control.controller.request.ParkingPerHourRequest;
 import com.fiap.ms_parquimetro_control.dao.EstacionamentoDao;
 import com.fiap.ms_parquimetro_control.exception.CarAlreadyParkedException;
@@ -14,6 +15,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.Duration;
+import java.time.LocalDateTime;
 import java.util.List;
 
 import static com.fiap.ms_parquimetro_control.repository.enums.TipoEstacionamentoEnum.FIXO;
@@ -55,5 +58,9 @@ public class ParquimetroServiceImpl implements ParquimetroService {
                     return dao.save(parking);
                 })
                 .orElseThrow(InvalidParkingStatusException::new);
+    }
+
+    public Estacionamento saidaEstacionamentoFixo(final FixedParkingExitRequest request) {
+        return repository.findByPlaca(request.getPlaca()).stream().filter(estacionamento -> !estacionamento.getStatus().equals(StatusEnum.FINALIZADO)).findFirst().orElseThrow(ParkingNotFoundException::new);
     }
 }
