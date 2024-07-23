@@ -21,8 +21,8 @@ Antes de começar, certifique-se de ter as seguintes ferramentas instaladas em s
     - `Exampleontroller`
 - **service**
     - **impl**
-        - `ExampleerviceImpl` (Implementação)
-    - `Exampleervice` (Interface)
+        - `ExampleServiceImpl` (Implementação)
+    - `ExampleService` (Interface)
 - **repository**
     - **entity**
         - `Example`

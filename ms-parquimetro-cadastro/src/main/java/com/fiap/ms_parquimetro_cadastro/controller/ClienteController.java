@@ -35,6 +35,12 @@ public class ClienteController {
         return ResponseEntity.ok(cliente);
     }
 
+    @GetMapping("/{cnh}")
+    public ResponseEntity<ClienteResponse> getClienteByCnh(@PathVariable String cnh) {
+        ClienteResponse cliente = clienteService.findClienteByCnh(cnh);
+        return ResponseEntity.ok(cliente);
+    }
+
     @PostMapping
     public ResponseEntity<ClienteResponse> createCliente(@Valid @RequestBody ClienteRequest clienteRequest) {
         ClienteResponse cliente = clienteService.save(clienteRequest);
