@@ -3,14 +3,14 @@ package com.fiap.ms_parquimetro_control.batch;
 import com.fiap.ms_parquimetro_control.batch.domain.ParkingMonitorToFixedTimeImpl;
 import com.fiap.ms_parquimetro_control.batch.domain.ParkingMonitorToVariableTimeImpl;
 import com.fiap.ms_parquimetro_control.dao.EstacionamentoDao;
-import com.fiap.ms_parquimetro_control.repository.enums.StatusEnum;
+import com.fiap.ms_parquimetro_control.repository.db.enums.StatusEnum;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
-import static com.fiap.ms_parquimetro_control.repository.enums.TipoEstacionamentoEnum.FIXO;
+import static com.fiap.ms_parquimetro_control.repository.db.enums.TipoEstacionamentoEnum.FIXO;
 
 @Slf4j
 @Service

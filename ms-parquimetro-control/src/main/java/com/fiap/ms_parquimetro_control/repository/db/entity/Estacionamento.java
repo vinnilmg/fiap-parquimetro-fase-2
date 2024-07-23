@@ -1,8 +1,8 @@
-package com.fiap.ms_parquimetro_control.repository.entity;
+package com.fiap.ms_parquimetro_control.repository.db.entity;
 
-import com.fiap.ms_parquimetro_control.repository.enums.StatusEnum;
-import com.fiap.ms_parquimetro_control.repository.enums.TipoEstacionamentoEnum;
-import com.fiap.ms_parquimetro_control.repository.enums.TipoPagamentoEnum;
+import com.fiap.ms_parquimetro_control.repository.db.enums.StatusEnum;
+import com.fiap.ms_parquimetro_control.repository.db.enums.TipoEstacionamentoEnum;
+import com.fiap.ms_parquimetro_control.repository.db.enums.TipoPagamentoEnum;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;

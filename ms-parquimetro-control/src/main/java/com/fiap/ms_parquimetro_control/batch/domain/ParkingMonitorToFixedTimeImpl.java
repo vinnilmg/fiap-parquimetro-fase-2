@@ -1,6 +1,6 @@
 package com.fiap.ms_parquimetro_control.batch.domain;
 
-import com.fiap.ms_parquimetro_control.repository.entity.Estacionamento;
+import com.fiap.ms_parquimetro_control.repository.db.entity.Estacionamento;
 import lombok.extern.slf4j.Slf4j;
 
 import java.time.LocalDateTime;

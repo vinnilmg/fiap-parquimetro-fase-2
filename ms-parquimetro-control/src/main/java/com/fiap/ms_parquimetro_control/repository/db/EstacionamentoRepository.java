@@ -1,6 +1,6 @@
-package com.fiap.ms_parquimetro_control.repository;
+package com.fiap.ms_parquimetro_control.repository.db;
 
-import com.fiap.ms_parquimetro_control.repository.entity.Estacionamento;
+import com.fiap.ms_parquimetro_control.repository.db.entity.Estacionamento;
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.stereotype.Repository;
 
@@ -13,7 +13,7 @@ public interface EstacionamentoRepository extends MongoRepository<Estacionamento
 
     List<Estacionamento> findByStatus(String status);
 
-    List<Estacionamento> findByPlacaAndStatusIn(String placa, List<String> status);
+    Optional<Estacionamento> findByPlacaAndStatusIn(String placa, List<String> status);
 
     Optional<Estacionamento> findByPlacaAndStatus(String placa, String status);
 }

@@ -1,4 +1,4 @@
-package com.fiap.ms_parquimetro_control.repository.enums;
+package com.fiap.ms_parquimetro_control.repository.db.enums;
 
 public enum StatusEnum {
     INICIADO,
