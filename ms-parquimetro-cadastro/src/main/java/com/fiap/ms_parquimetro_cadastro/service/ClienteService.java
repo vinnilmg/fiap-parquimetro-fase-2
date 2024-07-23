@@ -11,6 +11,8 @@ public interface ClienteService {
 
     public ClienteResponse findById(String UUID);
 
+    public ClienteResponse findClienteByCnh(String cnh);
+
     public ClienteResponse save(ClienteRequest cliente);
 
     public ClienteResponse update(String UUID, ClienteRequest cliente);
