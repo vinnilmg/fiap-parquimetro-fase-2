@@ -15,8 +15,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.time.Duration;
-import java.time.LocalDateTime;
 import java.util.List;
 
 import static com.fiap.ms_parquimetro_control.repository.enums.TipoEstacionamentoEnum.FIXO;
@@ -61,6 +59,7 @@ public class ParquimetroServiceImpl implements ParquimetroService {
     }
 
     public Estacionamento saidaEstacionamentoFixo(final FixedParkingExitRequest request) {
-        return repository.findByPlaca(request.getPlaca()).stream().filter(estacionamento -> !estacionamento.getStatus().equals(StatusEnum.FINALIZADO)).findFirst().orElseThrow(ParkingNotFoundException::new);
+        //return repository.findByPlaca(request.getPlaca()).stream().filter(estacionamento -> !estacionamento.getStatus().equals(StatusEnum.FINALIZADO)).findFirst().orElseThrow(ParkingNotFoundException::new);
+        return null;
     }
 }

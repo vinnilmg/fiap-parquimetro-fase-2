@@ -6,6 +6,7 @@ import com.fiap.ms_parquimetro_control.dao.EstacionamentoDao;
 import com.fiap.ms_parquimetro_control.repository.enums.StatusEnum;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
@@ -17,8 +18,17 @@ public class ParkingMonitorBatch {
     @Autowired
     private EstacionamentoDao dao;
 
+    @Value("${monitor.batch.active:true}")
+    private boolean active;
+
     @Scheduled(fixedDelay = 60000, initialDelay = 5000)
     private void monitoring() {
+        if (active) {
+            process();
+        }
+    }
+
+    private void process() {
         log.info("Iniciando monitoramento dos estacionamentos em aberto...");
         dao.findByStatus(StatusEnum.INICIADO.name())
                 .forEach(parking -> (parking.getTipo().equals(FIXO)

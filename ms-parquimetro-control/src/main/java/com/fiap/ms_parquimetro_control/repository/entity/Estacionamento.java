@@ -10,6 +10,8 @@ import lombok.*;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import java.io.Serial;
+import java.io.Serializable;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
@@ -19,7 +21,10 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 @Document(collection = "estacionamento")
-public class Estacionamento {
+public class Estacionamento implements Serializable {
+    @Serial
+    private static final long serialVersionUID = 1;
+
     @Id
     private String id;
     @NotBlank
