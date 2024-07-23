@@ -8,6 +8,7 @@ import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.ReportingPolicy;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Mapper(
@@ -27,10 +28,10 @@ public interface EstacionamentoMapper {
     @Mapping(target = "placa", source = "placa")
     @Mapping(target = "tempoFixo", source = "tempoFixo")
     @Mapping(target = "observacoes", source = "observacoes")
+    @Mapping(target = "valorCalculado", expression = "java(getValorFixo(request.getTempoFixo()))")
     @Mapping(target = "status", constant = "INICIADO")
     @Mapping(target = "tipo", constant = "FIXO")
     @Mapping(target = "dataHoraEntrada", expression = "java(LocalDateTime.now())")
-    // TODO: Calcular o valor com o tempo FIXO
     Estacionamento toEstacionamento(ParkingFixRequest request);
 
     @Mapping(target = "placa", source = "placa")
@@ -39,9 +40,12 @@ public interface EstacionamentoMapper {
     @Mapping(target = "dataHoraSaida", expression = "java(LocalDateTime.now())")
     Estacionamento toEstacionamentoSaidaVariavel(Estacionamento request);
 
-    default Double getValor(LocalDateTime time1) {
+    default BigDecimal getValor(LocalDateTime time1) {
         var time2 = LocalDateTime.now();
         var totalTime = (time2.getHour() - time1.getHour()) + 1;
-        return ParquimetroConstants.VALOR_HORA_TIPO_VARIAVEL * totalTime;
+        return ParquimetroConstants.VALOR_HORA_TIPO_VARIAVEL.multiply(BigDecimal.valueOf(totalTime));
+    }
+    default BigDecimal getValorFixo(Integer tempo) {
+        return ParquimetroConstants.VALOR_HORA_TIPO_FIXO.multiply(BigDecimal.valueOf(tempo));
     }
 }

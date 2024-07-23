@@ -4,10 +4,7 @@ import com.fiap.ms_parquimetro_control.controller.request.FinalizacaoRequest;
 import com.fiap.ms_parquimetro_control.controller.request.ParkingFixRequest;
 import com.fiap.ms_parquimetro_control.controller.request.ParkingPerHourRequest;
 import com.fiap.ms_parquimetro_control.controller.request.ParkingSaidaVariavelRequest;
-import com.fiap.ms_parquimetro_control.exception.CarAlreadyParkedException;
-import com.fiap.ms_parquimetro_control.exception.InvalidParkingStatusException;
-import com.fiap.ms_parquimetro_control.exception.InvalidPaymentTypePix;
-import com.fiap.ms_parquimetro_control.exception.ParkingNotFoundException;
+import com.fiap.ms_parquimetro_control.exception.*;
 import com.fiap.ms_parquimetro_control.repository.EstacionamentoRepository;
 import com.fiap.ms_parquimetro_control.repository.entity.Estacionamento;
 import com.fiap.ms_parquimetro_control.repository.enums.StatusEnum;
@@ -53,7 +50,7 @@ public class ParquimetroServiceImpl implements ParquimetroService {
         // Se existir: Pegar a forma de pagamento preferida que está no cadastro do cliente e inserir no ticket (campo pagamento)
 
         if (!(request.getTempoFixo() > 1)) {
-            throw new RuntimeException("O tempo fixo deve ser maior do que 1 hora."); // Ajusta exception
+            throw new InvalidTimeFix(); //
         }
 
         if (existsEstacionamentoEmAberto(request.getPlaca())) {
@@ -64,19 +61,14 @@ public class ParquimetroServiceImpl implements ParquimetroService {
 
     @Override
     public Estacionamento registrarSaidaVariavel(ParkingSaidaVariavelRequest request) {
-        // TODO: Regras:
-        // 1: Existe um estacionamento com status INICIADO para a placa?
-        // Se sim: Obtem o registro q está iniciado para atualiza-lo
-        // Se nao: Erro
-
-        /*if (!repository.existsByPlaca(request.getPlaca())) {
-            throw new RuntimeException("Placa não cadastrada.");
-        }
-        Estacionamento placaToUpdate = repository.findByPlaca(request.getPlaca());
-
-        return repository.save(estacionamentoMapper.toEstacionamentoSaidaVariavel(placaToUpdate));*/
-
-        return null;
+        return repository.findByPlaca(request.getPlaca())
+                .stream()
+                .filter(parking -> parking.getStatus().equals(StatusEnum.INICIADO))
+                .findFirst()
+                .map(parking -> {
+                    return repository.save(estacionamentoMapper.toEstacionamentoSaidaVariavel(parking));
+                })
+                .orElseThrow(ParkingNotFoundException::new);
     }
 
     @Override
