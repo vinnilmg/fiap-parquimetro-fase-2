@@ -11,8 +11,7 @@ import java.util.List;
 import java.util.Optional;
 
 import static com.fiap.ms_parquimetro_control.constants.CacheConstants.*;
-import static com.fiap.ms_parquimetro_control.repository.db.enums.StatusEnum.INICIADO;
-import static com.fiap.ms_parquimetro_control.repository.db.enums.StatusEnum.PAGAMENTO_PENDENTE;
+import static com.fiap.ms_parquimetro_control.repository.db.enums.StatusEnum.*;
 
 @Component
 public class EstacionamentoDaoImpl implements EstacionamentoDao {
@@ -24,6 +23,10 @@ public class EstacionamentoDaoImpl implements EstacionamentoDao {
         return repository.findByPlacaAndStatusIn(placa, List.of(INICIADO.name(), PAGAMENTO_PENDENTE.name()));
     }
 
+    public Optional<Estacionamento> findFixedExitParkingByPlaca(final String placa) {
+        return repository.findByPlacaAndStatus(placa, FINALIZADO.name());
+    }
+
     @Override
     @Cacheable(cacheNames = PARKING_PENDING_PAYMENT_CACHE_NAME, key = PARKING_CACHE_KEY)
     public Optional<Estacionamento> findPendingPaymentParkingByPlaca(final String placa) {
@@ -31,6 +34,7 @@ public class EstacionamentoDaoImpl implements EstacionamentoDao {
     }
 
     @Override
+    @Cacheable(cacheNames = FIXED_EXIT_PARKING_CACHE_NAME, key = FIXED_EXIT_PARKING_CACHE_NAME)
     public List<Estacionamento> findByPlaca(final String placa) {
         return repository.findByPlaca(placa);
     }

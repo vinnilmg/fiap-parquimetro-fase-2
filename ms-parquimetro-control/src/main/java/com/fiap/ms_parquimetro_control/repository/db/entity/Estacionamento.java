@@ -41,6 +41,8 @@ public class Estacionamento implements Serializable {
     private StatusEnum status;
     private TipoPagamentoEnum pagamento;
     private String observacoes;
+    private Integer horasEstacionadas;
+    private Integer horasExcedentes;
 
     public void finalizaEstacionamento(final TipoPagamentoEnum tipoPagamento) {
         this.setPagamento(tipoPagamento);

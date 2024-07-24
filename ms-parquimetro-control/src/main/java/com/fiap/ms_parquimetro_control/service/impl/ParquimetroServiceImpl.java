@@ -10,6 +10,7 @@ import com.fiap.ms_parquimetro_control.exception.InvalidPaymentTypePix;
 import com.fiap.ms_parquimetro_control.repository.cache.ParkingOpenCache;
 import com.fiap.ms_parquimetro_control.repository.cache.ParkingPendingPaymentCache;
 import com.fiap.ms_parquimetro_control.repository.db.entity.Estacionamento;
+import com.fiap.ms_parquimetro_control.repository.db.enums.StatusEnum;
 import com.fiap.ms_parquimetro_control.repository.db.enums.TipoPagamentoEnum;
 import com.fiap.ms_parquimetro_control.repository.db.mapper.EstacionamentoMapper;
 import com.fiap.ms_parquimetro_control.service.ParquimetroService;
@@ -17,9 +18,13 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
+import java.time.Duration;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
+import static com.fiap.ms_parquimetro_control.constants.ParquimetroConstants.VALOR_HORA_TIPO_FIXO;
 import static com.fiap.ms_parquimetro_control.repository.db.enums.TipoEstacionamentoEnum.FIXO;
 import static com.fiap.ms_parquimetro_control.repository.db.enums.TipoPagamentoEnum.PIX;
 
@@ -71,8 +76,17 @@ public class ParquimetroServiceImpl implements ParquimetroService {
     }
 
     public Estacionamento saidaEstacionamentoFixo(final FixedParkingExitRequest request) {
-        //return repository.findByPlaca(request.getPlaca()).stream().filter(estacionamento -> !estacionamento.getStatus().equals(StatusEnum.FINALIZADO)).findFirst().orElseThrow(ParkingNotFoundException::new);
-        return null;
+        return getFixedExitParking(request.getPlaca())
+                .map(parking -> {
+                    if (!parking.getStatus().equals(StatusEnum.INICIADO) /*|| !parking.getTipo().equals(FIXO)*/) {
+                        throw new InvalidParkingStatusException();
+                    }
+                    parking.setDataHoraSaida(LocalDateTime.now());
+                    parking.setStatus(StatusEnum.PAGAMENTO_PENDENTE);
+                    parking.setValorCalculado(calculaHorasEstacionadas(parking));
+                    return dao.save(parking);
+                })
+                .orElseThrow();
     }
 
     private Optional<Estacionamento> getPendingPaymentParking(final String placa) {
@@ -84,5 +98,24 @@ public class ParquimetroServiceImpl implements ParquimetroService {
         return parkingOpenCache.find(placa)
                 .or(() -> dao.findOpenedParkingByPlaca(placa)
                         .map(parking -> parkingOpenCache.save(parking.getPlaca(), parking)));
+    }
+
+    private Optional<Estacionamento> getFixedExitParking(final String placa) {
+        return parkingOpenCache.find(placa)
+                .or(() -> dao.findFixedExitParkingByPlaca(placa)
+                        .map(parking -> parkingOpenCache.save(parking.getPlaca(), parking)));
+    }
+
+    private BigDecimal calculaHorasEstacionadas(final Estacionamento estacionamento) {
+        Duration duration = Duration.between(estacionamento.getDataHoraEntrada(), estacionamento.getDataHoraSaida());
+        long diferencaDeHoras = duration.toHours();
+        BigDecimal horasCalculadas;
+        if (diferencaDeHoras != 0 && duration.toMinutesPart() > 0) {
+            horasCalculadas = VALOR_HORA_TIPO_FIXO.multiply(BigDecimal.valueOf(diferencaDeHoras));
+            return horasCalculadas;
+        } else {
+            horasCalculadas = VALOR_HORA_TIPO_FIXO;
+            return horasCalculadas;
+        }
     }
 }
