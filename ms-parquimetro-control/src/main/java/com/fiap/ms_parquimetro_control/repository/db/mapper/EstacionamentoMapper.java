@@ -1,9 +1,9 @@
-package com.fiap.ms_parquimetro_control.repository.mapper;
+package com.fiap.ms_parquimetro_control.repository.db.mapper;
 
 import com.fiap.ms_parquimetro_control.constants.ParquimetroConstants;
 import com.fiap.ms_parquimetro_control.controller.request.ParkingFixRequest;
 import com.fiap.ms_parquimetro_control.controller.request.ParkingPerHourRequest;
-import com.fiap.ms_parquimetro_control.repository.entity.Estacionamento;
+import com.fiap.ms_parquimetro_control.repository.db.entity.Estacionamento;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.ReportingPolicy;

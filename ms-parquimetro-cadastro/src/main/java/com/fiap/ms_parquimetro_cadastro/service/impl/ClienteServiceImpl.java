@@ -3,14 +3,17 @@ package com.fiap.ms_parquimetro_cadastro.service.impl;
 import com.fiap.ms_parquimetro_cadastro.controller.mapper.ClienteMapper;
 import com.fiap.ms_parquimetro_cadastro.controller.response.ClienteResponse;
 import com.fiap.ms_parquimetro_cadastro.controller.resquest.ClienteRequest;
+import com.fiap.ms_parquimetro_cadastro.exception.cliente.ClienteCnhNotFoundException;
+import com.fiap.ms_parquimetro_cadastro.exception.cliente.CnhJaUtilizadaException;
+import com.fiap.ms_parquimetro_cadastro.exception.cliente.UUIDClienteInvalidException;
 import com.fiap.ms_parquimetro_cadastro.repository.ClienteRepository;
 import com.fiap.ms_parquimetro_cadastro.service.ClienteService;
-import jakarta.persistence.EntityNotFoundException;
 import org.springframework.stereotype.Service;
 import java.util.List;
 
 import java.util.Objects;
-import java.util.UUID;
+import static com.fiap.ms_parquimetro_cadastro.utils.ValidateUUID.isValidUUID;
+
 
 import static java.util.UUID.fromString;
 
@@ -31,20 +34,27 @@ public class ClienteServiceImpl implements ClienteService {
                 .stream()
                 .map(clienteMapper::ClienteEntityToResponse)
                 .toList();
-
     }
 
     @Override
     public ClienteResponse findById(String UUID) {
+        isValidUUID(UUID);
         return clienteRepository.findById(fromString(UUID))
                 .map(clienteMapper::ClienteEntityToResponse)
-                .orElseThrow(() -> new EntityNotFoundException(UUID));
+                .orElseThrow(() -> new UUIDClienteInvalidException(UUID));
+    }
+
+    @Override
+    public ClienteResponse findClienteByCnh(String cnh) {
+        return clienteRepository.findClienteByCnh(cnh)
+                .map(clienteMapper::ClienteEntityToResponse)
+                .orElseThrow(() -> new ClienteCnhNotFoundException(cnh));
     }
 
     @Override
     public ClienteResponse save(ClienteRequest cliente) {
         if (clienteRepository.existsClienteByCnh(Objects.requireNonNull(cliente.getCnh()))) {
-            throw new RuntimeException("CNH já cadastrada.");
+            throw new CnhJaUtilizadaException(cliente.getCnh());
         }
 
         return clienteMapper.ClienteEntityToResponse(
@@ -55,7 +65,7 @@ public class ClienteServiceImpl implements ClienteService {
     @Override
     public ClienteResponse update(String UUID, ClienteRequest cliente) {
         if (!clienteRepository.existsById(fromString(UUID))) {
-            throw new RuntimeException("Cliente não cadastrado.");
+            throw new UUIDClienteInvalidException(UUID);
         }
 
         var clienteToUpdate = clienteRepository.findById(fromString(UUID)).get();

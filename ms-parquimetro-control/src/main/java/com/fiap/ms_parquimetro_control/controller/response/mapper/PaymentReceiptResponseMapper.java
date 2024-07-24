@@ -1,8 +1,8 @@
 package com.fiap.ms_parquimetro_control.controller.response.mapper;
 
 import com.fiap.ms_parquimetro_control.controller.response.PaymentReceiptResponse;
-import com.fiap.ms_parquimetro_control.repository.entity.Estacionamento;
-import com.fiap.ms_parquimetro_control.repository.enums.TipoEstacionamentoEnum;
+import com.fiap.ms_parquimetro_control.repository.db.entity.Estacionamento;
+import com.fiap.ms_parquimetro_control.repository.db.enums.TipoEstacionamentoEnum;
 import com.fiap.ms_parquimetro_control.utils.DateUtils;
 import com.fiap.ms_parquimetro_control.utils.MoneyUtils;
 import org.mapstruct.Mapper;

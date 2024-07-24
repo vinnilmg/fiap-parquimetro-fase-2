@@ -1,4 +1,4 @@
-package com.fiap.ms_parquimetro_control.repository.enums;
+package com.fiap.ms_parquimetro_control.repository.db.enums;
 
 import com.fiap.ms_parquimetro_control.exception.InvalidPaymentType;
 

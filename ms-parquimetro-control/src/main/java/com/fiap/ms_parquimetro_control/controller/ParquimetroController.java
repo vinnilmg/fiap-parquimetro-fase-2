@@ -6,6 +6,16 @@ import com.fiap.ms_parquimetro_control.controller.request.ParkingPerHourRequest;
 import com.fiap.ms_parquimetro_control.controller.request.ParkingSaidaVariavelRequest;
 import com.fiap.ms_parquimetro_control.controller.response.*;
 import com.fiap.ms_parquimetro_control.controller.response.mapper.*;
+import com.fiap.ms_parquimetro_control.controller.request.FixedParkingExitRequest;
+import com.fiap.ms_parquimetro_control.controller.request.ParkingPerHourRequest;
+import com.fiap.ms_parquimetro_control.controller.response.FixedParkingExitResponse;
+import com.fiap.ms_parquimetro_control.controller.response.ParkingPerHourResponse;
+import com.fiap.ms_parquimetro_control.controller.response.ParkingResponse;
+import com.fiap.ms_parquimetro_control.controller.response.PaymentReceiptResponse;
+import com.fiap.ms_parquimetro_control.controller.response.mapper.FixedParkingExitResponseMapper;
+import com.fiap.ms_parquimetro_control.controller.response.mapper.ParkingPerHourResponseMapper;
+import com.fiap.ms_parquimetro_control.controller.response.mapper.ParkingResponseMapper;
+import com.fiap.ms_parquimetro_control.controller.response.mapper.PaymentReceiptResponseMapper;
 import com.fiap.ms_parquimetro_control.service.ParquimetroService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,6 +41,9 @@ public class ParquimetroController {
     @Autowired
     private ParkingFixResponseMapper parkingFixResponseMapper;
 
+    @Autowired
+    private FixedParkingExitResponseMapper fixedParkingExitResponseMapper;
+
     @GetMapping
     public ResponseEntity<List<ParkingResponse>> buscaControleEstacionamento() {
         return ResponseEntity.ok(
@@ -42,6 +55,13 @@ public class ParquimetroController {
     }
 
     @PostMapping("/variavel")
+    @GetMapping("/fixed")
+    public ResponseEntity<FixedParkingExitResponse> saidaEstacionamentoFixo(@Valid @RequestBody final FixedParkingExitRequest request){
+        final var parking = service.saidaEstacionamentoFixo(request);
+        return ResponseEntity.ok().body(fixedParkingExitResponseMapper.toFixedParkingExitResponse(parking));
+    }
+
+    @PostMapping
     public ResponseEntity<ParkingPerHourResponse> novoEstacionamentoPorHora(
             @Valid @RequestBody final ParkingPerHourRequest request
     ) {

@@ -10,6 +10,6 @@ public class CarroPlacaNotFoundException extends CustomNotFoundException {
     private static final String errorCode = "Carro Placa Not Found";
 
     public CarroPlacaNotFoundException(String placa) {
-        super(String.format(MESSAGE, placa), MESSAGE);
+        super(String.format(MESSAGE, placa), errorCode);
     }
 }

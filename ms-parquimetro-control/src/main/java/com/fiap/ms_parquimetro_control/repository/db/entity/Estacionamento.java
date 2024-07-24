@@ -1,8 +1,8 @@
-package com.fiap.ms_parquimetro_control.repository.entity;
+package com.fiap.ms_parquimetro_control.repository.db.entity;
 
-import com.fiap.ms_parquimetro_control.repository.enums.StatusEnum;
-import com.fiap.ms_parquimetro_control.repository.enums.TipoEstacionamentoEnum;
-import com.fiap.ms_parquimetro_control.repository.enums.TipoPagamentoEnum;
+import com.fiap.ms_parquimetro_control.repository.db.enums.StatusEnum;
+import com.fiap.ms_parquimetro_control.repository.db.enums.TipoEstacionamentoEnum;
+import com.fiap.ms_parquimetro_control.repository.db.enums.TipoPagamentoEnum;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
@@ -10,6 +10,8 @@ import lombok.*;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import java.io.Serial;
+import java.io.Serializable;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
@@ -19,7 +21,10 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 @Document(collection = "estacionamento")
-public class Estacionamento {
+public class Estacionamento implements Serializable {
+    @Serial
+    private static final long serialVersionUID = 1;
+
     @Id
     private String id;
     @NotBlank
