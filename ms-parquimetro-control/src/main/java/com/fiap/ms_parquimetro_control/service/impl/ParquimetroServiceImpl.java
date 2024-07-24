@@ -1,26 +1,21 @@
 package com.fiap.ms_parquimetro_control.service.impl;
 
+import com.fiap.ms_parquimetro_control.controller.request.*;
+import com.fiap.ms_parquimetro_control.dao.EstacionamentoDao;
+import com.fiap.ms_parquimetro_control.exception.*;
+import com.fiap.ms_parquimetro_control.repository.cache.ParkingOpenCache;
+import com.fiap.ms_parquimetro_control.repository.cache.ParkingPendingPaymentCache;
+import com.fiap.ms_parquimetro_control.repository.db.entity.Estacionamento;
+import com.fiap.ms_parquimetro_control.repository.db.enums.StatusEnum;
+import com.fiap.ms_parquimetro_control.repository.db.enums.TipoPagamentoEnum;
+import com.fiap.ms_parquimetro_control.repository.db.mapper.EstacionamentoMapper;
+import com.fiap.ms_parquimetro_control.client.MsParquimetroCadastroClient;
 import com.fiap.ms_parquimetro_control.controller.request.FinalizacaoRequest;
 import com.fiap.ms_parquimetro_control.controller.request.ParkingFixRequest;
 import com.fiap.ms_parquimetro_control.controller.request.ParkingPerHourRequest;
 import com.fiap.ms_parquimetro_control.controller.request.ParkingSaidaVariavelRequest;
-import com.fiap.ms_parquimetro_control.exception.*;
-import com.fiap.ms_parquimetro_control.repository.EstacionamentoRepository;
-import com.fiap.ms_parquimetro_control.repository.entity.Estacionamento;
-import com.fiap.ms_parquimetro_control.repository.enums.StatusEnum;
-import com.fiap.ms_parquimetro_control.repository.enums.TipoPagamentoEnum;
-import com.fiap.ms_parquimetro_control.repository.mapper.EstacionamentoMapper;
-import com.fiap.ms_parquimetro_control.controller.request.FixedParkingExitRequest;
-import com.fiap.ms_parquimetro_control.controller.request.ParkingPerHourRequest;
-import com.fiap.ms_parquimetro_control.dao.EstacionamentoDao;
-import com.fiap.ms_parquimetro_control.exception.CarAlreadyParkedException;
-import com.fiap.ms_parquimetro_control.exception.InvalidParkingStatusException;
-import com.fiap.ms_parquimetro_control.exception.InvalidPaymentTypePix;
-import com.fiap.ms_parquimetro_control.repository.cache.ParkingOpenCache;
-import com.fiap.ms_parquimetro_control.repository.cache.ParkingPendingPaymentCache;
-import com.fiap.ms_parquimetro_control.repository.db.entity.Estacionamento;
-import com.fiap.ms_parquimetro_control.repository.db.enums.TipoPagamentoEnum;
-import com.fiap.ms_parquimetro_control.repository.db.mapper.EstacionamentoMapper;
+import com.fiap.ms_parquimetro_control.repository.dto.CarroDTO;
+import com.fiap.ms_parquimetro_control.repository.dto.ClienteDTO;
 import com.fiap.ms_parquimetro_control.service.ParquimetroService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -47,6 +42,9 @@ public class ParquimetroServiceImpl implements ParquimetroService {
     @Autowired
     private EstacionamentoMapper estacionamentoMapper;
 
+    @Autowired
+    private MsParquimetroCadastroClient msParquimetroCadastroClient;
+
     @Override
     public List<Estacionamento> findAll() {
         return dao.findAll();
@@ -66,6 +64,9 @@ public class ParquimetroServiceImpl implements ParquimetroService {
     @Override
     public Estacionamento novoEstacionamentoFixo(final ParkingFixRequest request) {
         // TODO: Integracao com o serviço de cadastro utilizando a placa
+        CarroDTO carro = msParquimetroCadastroClient.getCarroByPlaca(request.getPlaca());
+
+        ClienteDTO cliente = msParquimetroCadastroClient.getClienteById(carro.getClienteId());
         // Se nao estiver cadastrado -> Erro
         // Se existir: Pegar a forma de pagamento preferida que está no cadastro do cliente e inserir no ticket (campo pagamento)
 
@@ -76,17 +77,17 @@ public class ParquimetroServiceImpl implements ParquimetroService {
         if (existsEstacionamentoEmAberto(request.getPlaca())) {
             throw new CarAlreadyParkedException(request.getPlaca());
         }
-        return repository.insert(estacionamentoMapper.toEstacionamento(request));
+        return dao.save(estacionamentoMapper.toEstacionamento(request));
     }
 
     @Override
     public Estacionamento registrarSaidaVariavel(ParkingSaidaVariavelRequest request) {
-        return repository.findByPlaca(request.getPlaca())
+        return dao.findByPlaca(request.getPlaca())
                 .stream()
                 .filter(parking -> parking.getStatus().equals(StatusEnum.INICIADO))
                 .findFirst()
                 .map(parking -> {
-                    return repository.save(estacionamentoMapper.toEstacionamentoSaidaVariavel(parking));
+                    return dao.save(estacionamentoMapper.toEstacionamentoSaidaVariavel(parking));
                 })
                 .orElseThrow(ParkingNotFoundException::new);
     }
@@ -124,7 +125,7 @@ public class ParquimetroServiceImpl implements ParquimetroService {
     }
 
     private boolean existsEstacionamentoEmAberto(final String placa) {
-        return repository.findByPlaca(placa)
+        return dao.findByPlaca(placa)
                 .stream()
                 .anyMatch(estacionamento -> !estacionamento.getStatus().equals(StatusEnum.FINALIZADO));
     }
