@@ -7,6 +7,7 @@ import com.fiap.ms_parquimetro_control.dao.EstacionamentoDao;
 import com.fiap.ms_parquimetro_control.exception.CarAlreadyParkedException;
 import com.fiap.ms_parquimetro_control.exception.InvalidParkingStatusException;
 import com.fiap.ms_parquimetro_control.exception.InvalidPaymentTypePix;
+import com.fiap.ms_parquimetro_control.exception.ParkingNotFoundException;
 import com.fiap.ms_parquimetro_control.repository.cache.ParkingOpenCache;
 import com.fiap.ms_parquimetro_control.repository.cache.ParkingPendingPaymentCache;
 import com.fiap.ms_parquimetro_control.repository.db.entity.Estacionamento;
@@ -76,17 +77,20 @@ public class ParquimetroServiceImpl implements ParquimetroService {
     }
 
     public Estacionamento saidaEstacionamentoFixo(final FixedParkingExitRequest request) {
-        return getFixedExitParking(request.getPlaca())
+        return getOpenedParking(request.getPlaca())
                 .map(parking -> {
-                    if (!parking.getStatus().equals(StatusEnum.INICIADO) /*|| !parking.getTipo().equals(FIXO)*/) {
+                    if (!parking.getTipo().equals(FIXO)) {
                         throw new InvalidParkingStatusException();
                     }
                     parking.setDataHoraSaida(LocalDateTime.now());
                     parking.setStatus(StatusEnum.PAGAMENTO_PENDENTE);
                     parking.setValorCalculado(calculaHorasEstacionadas(parking));
-                    return dao.save(parking);
+
+                    parkingOpenCache.delete(parking.getPlaca());
+                    final var parkingUpdated = dao.save(parking);
+                    return parkingPendingPaymentCache.save(parking.getPlaca(), parkingUpdated);
                 })
-                .orElseThrow();
+                .orElseThrow(ParkingNotFoundException::new);
     }
 
     private Optional<Estacionamento> getPendingPaymentParking(final String placa) {
@@ -97,12 +101,6 @@ public class ParquimetroServiceImpl implements ParquimetroService {
     private Optional<Estacionamento> getOpenedParking(final String placa) {
         return parkingOpenCache.find(placa)
                 .or(() -> dao.findOpenedParkingByPlaca(placa)
-                        .map(parking -> parkingOpenCache.save(parking.getPlaca(), parking)));
-    }
-
-    private Optional<Estacionamento> getFixedExitParking(final String placa) {
-        return parkingOpenCache.find(placa)
-                .or(() -> dao.findFixedExitParkingByPlaca(placa)
                         .map(parking -> parkingOpenCache.save(parking.getPlaca(), parking)));
     }
 
