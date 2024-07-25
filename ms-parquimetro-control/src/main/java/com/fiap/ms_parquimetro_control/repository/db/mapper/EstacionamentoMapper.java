@@ -4,7 +4,6 @@ import com.fiap.ms_parquimetro_control.constants.ParquimetroConstants;
 import com.fiap.ms_parquimetro_control.controller.request.ParkingFixRequest;
 import com.fiap.ms_parquimetro_control.controller.request.ParkingPerHourRequest;
 import com.fiap.ms_parquimetro_control.repository.db.entity.Estacionamento;
-import com.fiap.ms_parquimetro_control.repository.db.enums.FormaPagamentoPreferidaEnum;
 import com.fiap.ms_parquimetro_control.repository.db.enums.TipoPagamentoEnum;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -41,6 +40,7 @@ public interface EstacionamentoMapper {
     @Mapping(target = "valorCalculado", expression = "java(getValor(request.getDataHoraEntrada()))")
     @Mapping(target = "dataHoraEntrada", source = "dataHoraEntrada")
     @Mapping(target = "dataHoraSaida", expression = "java(LocalDateTime.now())")
+    @Mapping(target = "status", constant = "PAGAMENTO_PENDENTE")
     Estacionamento toEstacionamentoSaidaVariavel(Estacionamento request);
 
     default BigDecimal getValor(LocalDateTime time1) {

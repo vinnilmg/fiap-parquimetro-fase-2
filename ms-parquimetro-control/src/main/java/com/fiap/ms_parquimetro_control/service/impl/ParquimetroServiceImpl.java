@@ -1,20 +1,14 @@
 package com.fiap.ms_parquimetro_control.service.impl;
 
+import com.fiap.ms_parquimetro_control.client.MsParquimetroCadastroClient;
 import com.fiap.ms_parquimetro_control.controller.request.*;
 import com.fiap.ms_parquimetro_control.dao.EstacionamentoDao;
 import com.fiap.ms_parquimetro_control.exception.*;
 import com.fiap.ms_parquimetro_control.repository.cache.ParkingOpenCache;
 import com.fiap.ms_parquimetro_control.repository.cache.ParkingPendingPaymentCache;
 import com.fiap.ms_parquimetro_control.repository.db.entity.Estacionamento;
-import com.fiap.ms_parquimetro_control.repository.db.enums.FormaPagamentoPreferidaEnum;
-import com.fiap.ms_parquimetro_control.repository.db.enums.StatusEnum;
 import com.fiap.ms_parquimetro_control.repository.db.enums.TipoPagamentoEnum;
 import com.fiap.ms_parquimetro_control.repository.db.mapper.EstacionamentoMapper;
-import com.fiap.ms_parquimetro_control.client.MsParquimetroCadastroClient;
-import com.fiap.ms_parquimetro_control.controller.request.FinalizacaoRequest;
-import com.fiap.ms_parquimetro_control.controller.request.ParkingFixRequest;
-import com.fiap.ms_parquimetro_control.controller.request.ParkingPerHourRequest;
-import com.fiap.ms_parquimetro_control.controller.request.ParkingSaidaVariavelRequest;
 import com.fiap.ms_parquimetro_control.repository.dto.CarroDTO;
 import com.fiap.ms_parquimetro_control.repository.dto.ClienteDTO;
 import com.fiap.ms_parquimetro_control.service.ParquimetroService;
@@ -64,31 +58,29 @@ public class ParquimetroServiceImpl implements ParquimetroService {
 
     @Override
     public Estacionamento novoEstacionamentoFixo(final ParkingFixRequest request) {
-        // TODO: Integracao com o serviço de cadastro utilizando a placa
         CarroDTO carro = msParquimetroCadastroClient.getCarroByPlaca(request.getPlaca());
-
         ClienteDTO cliente = msParquimetroCadastroClient.getClienteById(carro.getClienteId());
-        // Se nao estiver cadastrado -> Erro
-        // Se existir: Pegar a forma de pagamento preferida que está no cadastro do cliente e inserir no ticket (campo pagamento)
-        request.setPagamento(cliente.getFormaPagamentoPreferida());
-        if (!(request.getTempoFixo() > 1)) {
-            throw new InvalidTimeFix(); //
-        }
 
-        if (existsEstacionamentoEmAberto(request.getPlaca())) {
-            throw new CarAlreadyParkedException(request.getPlaca());
-        }
-        return dao.save(estacionamentoMapper.toEstacionamento(request));
+        request.setPagamento(cliente.getFormaPagamentoPreferida());
+
+        if (!(request.getTempoFixo() > 1)) throw new InvalidTimeFix();
+
+        getOpenedParking(request.getPlaca())
+                .ifPresent(parking -> {
+                    throw new CarAlreadyParkedException(parking.getPlaca());
+                });
+
+        final var parking = dao.save(estacionamentoMapper.toEstacionamento(request));
+        return parkingOpenCache.save(parking.getPlaca(), parking);
     }
 
     @Override
     public Estacionamento registrarSaidaVariavel(ParkingSaidaVariavelRequest request) {
-        return dao.findByPlaca(request.getPlaca())
-                .stream()
-                .filter(parking -> parking.getStatus().equals(StatusEnum.INICIADO))
-                .findFirst()
+        return getOpenedParking(request.getPlaca())
                 .map(parking -> {
-                    return dao.save(estacionamentoMapper.toEstacionamentoSaidaVariavel(parking));
+                    final var estacionamento = dao.save(estacionamentoMapper.toEstacionamentoSaidaVariavel(parking));
+                    parkingOpenCache.delete(request.getPlaca());
+                    return parkingPendingPaymentCache.save(request.getPlaca(), estacionamento);
                 })
                 .orElseThrow(ParkingNotFoundException::new);
     }
@@ -123,11 +115,5 @@ public class ParquimetroServiceImpl implements ParquimetroService {
         return parkingOpenCache.find(placa)
                 .or(() -> dao.findOpenedParkingByPlaca(placa)
                         .map(parking -> parkingOpenCache.save(parking.getPlaca(), parking)));
-    }
-
-    private boolean existsEstacionamentoEmAberto(final String placa) {
-        return dao.findByPlaca(placa)
-                .stream()
-                .anyMatch(estacionamento -> !estacionamento.getStatus().equals(StatusEnum.FINALIZADO));
     }
 }
