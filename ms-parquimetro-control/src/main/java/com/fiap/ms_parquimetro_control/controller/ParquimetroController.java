@@ -1,6 +1,11 @@
 package com.fiap.ms_parquimetro_control.controller;
 
 import com.fiap.ms_parquimetro_control.controller.request.FinalizacaoRequest;
+import com.fiap.ms_parquimetro_control.controller.request.ParkingFixRequest;
+import com.fiap.ms_parquimetro_control.controller.request.ParkingPerHourRequest;
+import com.fiap.ms_parquimetro_control.controller.request.ParkingSaidaVariavelRequest;
+import com.fiap.ms_parquimetro_control.controller.response.*;
+import com.fiap.ms_parquimetro_control.controller.response.mapper.*;
 import com.fiap.ms_parquimetro_control.controller.request.FixedParkingExitRequest;
 import com.fiap.ms_parquimetro_control.controller.request.ParkingPerHourRequest;
 import com.fiap.ms_parquimetro_control.controller.response.FixedParkingExitResponse;
@@ -31,6 +36,10 @@ public class ParquimetroController {
     private PaymentReceiptResponseMapper paymentReceiptResponseMapper;
     @Autowired
     private ParkingResponseMapper parkingResponseMapper;
+    @Autowired
+    private ParkingSaidaVariavelResponseMapper parkingSaidaVariavelResponseMapper;
+    @Autowired
+    private ParkingFixResponseMapper parkingFixResponseMapper;
 
     @Autowired
     private FixedParkingExitResponseMapper fixedParkingExitResponseMapper;
@@ -45,6 +54,7 @@ public class ParquimetroController {
         );
     }
 
+    @PostMapping("/variavel")
     @GetMapping("/fixed")
     public ResponseEntity<FixedParkingExitResponse> saidaEstacionamentoFixo(@Valid @RequestBody final FixedParkingExitRequest request){
         final var parking = service.saidaEstacionamentoFixo(request);
@@ -60,11 +70,29 @@ public class ParquimetroController {
                 .body(parkingPerHourResponseMapper.toParkingPerHourResponse(parking));
     }
 
+    @PostMapping("/fixo")
+    public ResponseEntity<ParkingFixResponse> novoEstacionamentoFixo(
+            @Valid @RequestBody ParkingFixRequest request
+    ) {
+        final var parking = service.novoEstacionamentoFixo(request);
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(parkingFixResponseMapper.toParkingFixResponse(parking));
+    }
+
     @PutMapping
     public ResponseEntity<PaymentReceiptResponse> finalizaEstacionamento(
             @Valid @RequestBody final FinalizacaoRequest request
     ) {
         final var parking = service.finalizaEstacionamento(request);
         return ResponseEntity.ok().body(paymentReceiptResponseMapper.toPaymentReceiptResponse(parking));
+    }
+
+    @PutMapping("/saida-variavel")
+    public ResponseEntity<ParkingSaidaVariavelResponse> getSaidaVariavel(
+            @Valid @RequestBody ParkingSaidaVariavelRequest request
+    ) {
+        final var parking = service.registrarSaidaVariavel(request);
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(parkingSaidaVariavelResponseMapper.toParkingSaidaVariavelResponse(parking));
     }
 }

@@ -35,5 +35,9 @@ out/
 
 ### VS Code ###
 .vscode/
+.vm
+
 
 mongodb/
+
+.idea/

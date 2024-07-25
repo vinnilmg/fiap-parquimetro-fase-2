@@ -31,7 +31,8 @@ public class ParquimetroControlExceptionHandler {
     }
 
     @ExceptionHandler({
-            ParkingNotFoundException.class
+            ParkingNotFoundException.class,
+            CarNotFoundException.class
     })
     public ResponseEntity<ApiError> handleNotFoundError(
             final Exception e, final WebRequest request
