@@ -8,5 +8,5 @@ import lombok.Setter;
 @Setter
 public class ClienteDTO {
 
-    private FormaPagamentoPreferidaEnum  formaPagamentoPreferida;
+    private String  formaPagamentoPreferida;
 }

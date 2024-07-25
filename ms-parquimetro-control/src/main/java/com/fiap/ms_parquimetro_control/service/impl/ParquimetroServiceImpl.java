@@ -6,6 +6,7 @@ import com.fiap.ms_parquimetro_control.exception.*;
 import com.fiap.ms_parquimetro_control.repository.cache.ParkingOpenCache;
 import com.fiap.ms_parquimetro_control.repository.cache.ParkingPendingPaymentCache;
 import com.fiap.ms_parquimetro_control.repository.db.entity.Estacionamento;
+import com.fiap.ms_parquimetro_control.repository.db.enums.FormaPagamentoPreferidaEnum;
 import com.fiap.ms_parquimetro_control.repository.db.enums.StatusEnum;
 import com.fiap.ms_parquimetro_control.repository.db.enums.TipoPagamentoEnum;
 import com.fiap.ms_parquimetro_control.repository.db.mapper.EstacionamentoMapper;
@@ -69,7 +70,7 @@ public class ParquimetroServiceImpl implements ParquimetroService {
         ClienteDTO cliente = msParquimetroCadastroClient.getClienteById(carro.getClienteId());
         // Se nao estiver cadastrado -> Erro
         // Se existir: Pegar a forma de pagamento preferida que está no cadastro do cliente e inserir no ticket (campo pagamento)
-
+        request.setPagamento(cliente.getFormaPagamentoPreferida());
         if (!(request.getTempoFixo() > 1)) {
             throw new InvalidTimeFix(); //
         }
