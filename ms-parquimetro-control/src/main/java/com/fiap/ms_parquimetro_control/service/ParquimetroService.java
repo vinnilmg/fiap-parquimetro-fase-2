@@ -10,10 +10,12 @@ public interface ParquimetroService {
 
     Estacionamento novoEstacionamentoPorHora(ParkingPerHourRequest request);
 
-    Estacionamento finalizaEstacionamento(FinalizacaoRequest request);
-
     Estacionamento novoEstacionamentoFixo(ParkingFixRequest request);
 
-    Estacionamento registrarSaidaVariavel(ParkingSaidaVariavelRequest request);
-    Estacionamento saidaEstacionamentoFixo(FixedParkingExitRequest request);
+    Estacionamento registrarSaidaEstacionamentoVariavel(ParkingSaidaVariavelRequest request);
+
+    Estacionamento registrarSaidaEstacionamentoFixo(FixedParkingExitRequest request);
+
+    Estacionamento finalizaEstacionamento(FinalizacaoRequest request);
+
 }

@@ -11,8 +11,8 @@ import com.fiap.ms_parquimetro_control.repository.db.entity.Estacionamento;
 import com.fiap.ms_parquimetro_control.repository.db.enums.StatusEnum;
 import com.fiap.ms_parquimetro_control.repository.db.enums.TipoPagamentoEnum;
 import com.fiap.ms_parquimetro_control.repository.db.mapper.EstacionamentoMapper;
-import com.fiap.ms_parquimetro_control.repository.dto.CarroDTO;
-import com.fiap.ms_parquimetro_control.repository.dto.ClienteDTO;
+import com.fiap.ms_parquimetro_control.client.dto.CarroDTO;
+import com.fiap.ms_parquimetro_control.client.dto.ClienteDTO;
 import com.fiap.ms_parquimetro_control.service.ParquimetroService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,6 +26,7 @@ import java.util.Optional;
 import static com.fiap.ms_parquimetro_control.constants.ParquimetroConstants.VALOR_HORA_TIPO_FIXO;
 import static com.fiap.ms_parquimetro_control.constants.ParquimetroConstants.VALOR_HORA_TIPO_VARIAVEL;
 import static com.fiap.ms_parquimetro_control.repository.db.enums.TipoEstacionamentoEnum.FIXO;
+import static com.fiap.ms_parquimetro_control.repository.db.enums.TipoEstacionamentoEnum.HORA;
 import static com.fiap.ms_parquimetro_control.repository.db.enums.TipoPagamentoEnum.PIX;
 import static com.fiap.ms_parquimetro_control.utils.DateUtils.calculaHorasEntreDatas;
 
@@ -70,7 +71,7 @@ public class ParquimetroServiceImpl implements ParquimetroService {
 
         request.setPagamento(cliente.getFormaPagamentoPreferida());
 
-        if (!(request.getTempoFixo() > 1)) throw new InvalidTimeFix();
+        if (request.getTempoFixo().compareTo(1) != 1) throw new InvalidTimeFixException();
 
         getOpenedParking(request.getPlaca())
                 .ifPresent(parking -> {
@@ -82,9 +83,10 @@ public class ParquimetroServiceImpl implements ParquimetroService {
     }
 
     @Override
-    public Estacionamento registrarSaidaVariavel(ParkingSaidaVariavelRequest request) {
+    public Estacionamento registrarSaidaEstacionamentoVariavel(ParkingSaidaVariavelRequest request) {
         return getOpenedParking(request.getPlaca())
                 .map(parking -> {
+                    if (!parking.getTipo().equals(HORA)) throw new InvalidParkingTypeException();
                     final var estacionamento = dao.save(estacionamentoMapper.toEstacionamentoSaidaVariavel(parking));
                     parkingOpenCache.delete(request.getPlaca());
                     return parkingPendingPaymentCache.save(request.getPlaca(), estacionamento);
@@ -93,27 +95,10 @@ public class ParquimetroServiceImpl implements ParquimetroService {
     }
 
     @Override
-    public Estacionamento finalizaEstacionamento(final FinalizacaoRequest request) {
-        final var tipoPagamento = TipoPagamentoEnum.toEnum(request.getTipoPagamento());
-        return getPendingPaymentParking(request.getPlaca())
-                .map(parking -> {
-                    if (tipoPagamento.equals(PIX) && !parking.getTipo().equals(FIXO)) {
-                        throw new InvalidPaymentTypePix();
-                    }
-
-                    parking.finalizaEstacionamento(tipoPagamento);
-                    parkingPendingPaymentCache.delete(request.getPlaca());
-                    return dao.save(parking);
-                })
-                .orElseThrow(InvalidParkingStatusException::new);
-    }
-
-    public Estacionamento saidaEstacionamentoFixo(final FixedParkingExitRequest request) {
+    public Estacionamento registrarSaidaEstacionamentoFixo(final FixedParkingExitRequest request) {
         return getOpenedParking(request.getPlaca())
                 .map(parking -> {
-                    if (!parking.getTipo().equals(FIXO)) {
-                        throw new InvalidParkingStatusException();
-                    }
+                    if (!parking.getTipo().equals(FIXO)) throw new InvalidParkingTypeException();
                     parking.setDataHoraSaida(LocalDateTime.now());
                     parking.setStatus(StatusEnum.PAGAMENTO_PENDENTE);
                     parking.setHorasExcedentes((int) calculaHorasEstacionadasAdicional(parking));
@@ -125,6 +110,22 @@ public class ParquimetroServiceImpl implements ParquimetroService {
                     return parkingPendingPaymentCache.save(parking.getPlaca(), parkingUpdated);
                 })
                 .orElseThrow(ParkingNotFoundException::new);
+    }
+
+    @Override
+    public Estacionamento finalizaEstacionamento(final FinalizacaoRequest request) {
+        final var tipoPagamento = TipoPagamentoEnum.toEnum(request.getTipoPagamento());
+        return getPendingPaymentParking(request.getPlaca())
+                .map(parking -> {
+                    if (tipoPagamento.equals(PIX) && !parking.getTipo().equals(FIXO)) {
+                        throw new InvalidPaymentTypePixException();
+                    }
+
+                    parking.finalizaEstacionamento(tipoPagamento);
+                    parkingPendingPaymentCache.delete(request.getPlaca());
+                    return dao.save(parking);
+                })
+                .orElseThrow(InvalidParkingStatusException::new);
     }
 
     private Optional<Estacionamento> getPendingPaymentParking(final String placa) {
@@ -141,15 +142,18 @@ public class ParquimetroServiceImpl implements ParquimetroService {
     private long calculaHorasEstacionadasFixa(final Estacionamento estacionamento) {
         long horasTotais = calculaHorasEntreDatas(estacionamento.getDataHoraEntrada(), estacionamento.getDataHoraSaida());
         long horasFixa = estacionamento.getTempoFixo();
-        long horasFixaCalculadas = calculaHorasEntreDatas(estacionamento.getDataHoraEntrada(), estacionamento.getDataHoraEntrada().plusHours(horasFixa));
+        long horasFixaCalculadas = calculaHorasEntreDatas(
+                estacionamento.getDataHoraEntrada(),
+                estacionamento.getDataHoraEntrada().plusHours(horasFixa));
 
         BigDecimal valorTotal;
-
         if (horasTotais <= horasFixaCalculadas) {
             valorTotal = VALOR_HORA_TIPO_FIXO.multiply(BigDecimal.valueOf(horasFixa));
         } else {
             BigDecimal valorFixo = VALOR_HORA_TIPO_FIXO.multiply(BigDecimal.valueOf(horasFixa));
-            long horasAdicionais = calculaHorasEntreDatas(estacionamento.getDataHoraEntrada().plusHours(horasFixa), estacionamento.getDataHoraSaida());
+            long horasAdicionais = calculaHorasEntreDatas(
+                    estacionamento.getDataHoraEntrada().plusHours(horasFixa),
+                    estacionamento.getDataHoraSaida());
             BigDecimal valorAdicional = VALOR_HORA_TIPO_VARIAVEL.multiply(BigDecimal.valueOf(horasAdicionais));
             valorTotal = valorFixo.add(valorAdicional);
         }

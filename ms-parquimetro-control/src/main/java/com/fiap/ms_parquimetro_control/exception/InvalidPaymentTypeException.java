@@ -1,9 +1,9 @@
 package com.fiap.ms_parquimetro_control.exception;
 
-public class InvalidPaymentType extends RuntimeException {
+public class InvalidPaymentTypeException extends RuntimeException {
     private static final String MESSAGE = "Informe um tipo de pagamento aceito por nós.";
 
-    public InvalidPaymentType() {
+    public InvalidPaymentTypeException() {
         super(MESSAGE);
     }
 }

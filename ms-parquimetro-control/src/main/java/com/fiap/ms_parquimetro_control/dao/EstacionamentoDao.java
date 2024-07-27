@@ -8,11 +8,7 @@ import java.util.Optional;
 public interface EstacionamentoDao {
     Optional<Estacionamento> findOpenedParkingByPlaca(String placa);
 
-    Optional<Estacionamento> findFixedExitParkingByPlaca(String placa);
-
     Optional<Estacionamento> findPendingPaymentParkingByPlaca(String placa);
-
-    List<Estacionamento> findByPlaca(String placa);
 
     List<Estacionamento> findByStatus(String status);
 
