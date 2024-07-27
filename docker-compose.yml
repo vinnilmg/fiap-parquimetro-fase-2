@@ -1,4 +1,5 @@
 name: fiap-parquimetro
+
 services:
   mongodb:
     image: mongo:latest
@@ -28,7 +29,7 @@ services:
       - postgres:/var/lib/postgresql/data
 
   ms-parquimetro-control:
-    build: ms-parquimetro-control/
+    image: vinnilmg/ms-parquimetro-control:latest
     ports:
       - "8091:8091"
     depends_on:
@@ -39,17 +40,17 @@ services:
       - JAVA_TOOLS_OPTIONS=-Dfile.encoding=UTF-8
 
   ms-parquimetro-cadastro:
-    build: ms-parquimetro-cadastro/
+    image: vinnilmg/ms-parquimetro-cadastro:latest
     ports:
       - "8090:8090"
     depends_on:
       - postgresql
     environment:
-      POSTGRES_HOST: postgresql
-      POSTGRES_PORT: 5432
-      POSTGRES_DB: parquimetro_cadastro_db
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: 123456
+      - POSTGRES_HOST=postgresql
+      - POSTGRES_PORT=5432
+      - POSTGRES_DB=parquimetro_cadastro_db
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=123456
 
 networks:
   default:
