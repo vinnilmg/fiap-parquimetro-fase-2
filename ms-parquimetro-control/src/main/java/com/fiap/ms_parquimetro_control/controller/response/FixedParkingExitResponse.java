@@ -1,5 +1,6 @@
 package com.fiap.ms_parquimetro_control.controller.response;
 
+import com.fiap.ms_parquimetro_control.repository.db.enums.StatusEnum;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -18,6 +19,8 @@ public class FixedParkingExitResponse {
     private LocalDateTime dataHoraEntrada;
     private LocalDateTime dataHoraSaida;
     private Integer tempoFixo;
+    private Integer horasEstacionadas;
     private Double horasExcedentes;
     private BigDecimal valorCalculado;
+    private StatusEnum status;
 }

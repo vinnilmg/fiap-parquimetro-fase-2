@@ -19,14 +19,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
-import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
 import static com.fiap.ms_parquimetro_control.constants.ParquimetroConstants.VALOR_HORA_TIPO_FIXO;
+import static com.fiap.ms_parquimetro_control.constants.ParquimetroConstants.VALOR_HORA_TIPO_VARIAVEL;
 import static com.fiap.ms_parquimetro_control.repository.db.enums.TipoEstacionamentoEnum.FIXO;
 import static com.fiap.ms_parquimetro_control.repository.db.enums.TipoPagamentoEnum.PIX;
+import static com.fiap.ms_parquimetro_control.utils.DateUtils.calculaHorasEntreDatas;
 
 @Slf4j
 @Service
@@ -115,7 +116,9 @@ public class ParquimetroServiceImpl implements ParquimetroService {
                     }
                     parking.setDataHoraSaida(LocalDateTime.now());
                     parking.setStatus(StatusEnum.PAGAMENTO_PENDENTE);
-                    parking.setValorCalculado(calculaHorasEstacionadas(parking));
+                    parking.setHorasExcedentes((int) calculaHorasEstacionadasAdicional(parking));
+                    parking.setValorCalculado(BigDecimal.valueOf(calculaHorasEstacionadasFixa(parking)));
+                    parking.setHorasEstacionadas(parking.getTempoFixo() + parking.getHorasExcedentes());
 
                     parkingOpenCache.delete(parking.getPlaca());
                     final var parkingUpdated = dao.save(parking);
@@ -135,16 +138,28 @@ public class ParquimetroServiceImpl implements ParquimetroService {
                         .map(parking -> parkingOpenCache.save(parking.getPlaca(), parking)));
     }
 
-    private BigDecimal calculaHorasEstacionadas(final Estacionamento estacionamento) {
-        Duration duration = Duration.between(estacionamento.getDataHoraEntrada(), estacionamento.getDataHoraSaida());
-        long diferencaDeHoras = duration.toHours();
-        BigDecimal horasCalculadas;
-        if (diferencaDeHoras != 0 && duration.toMinutesPart() > 0) {
-            horasCalculadas = VALOR_HORA_TIPO_FIXO.multiply(BigDecimal.valueOf(diferencaDeHoras));
-            return horasCalculadas;
+    private long calculaHorasEstacionadasFixa(final Estacionamento estacionamento) {
+        long horasTotais = calculaHorasEntreDatas(estacionamento.getDataHoraEntrada(), estacionamento.getDataHoraSaida());
+        long horasFixa = estacionamento.getTempoFixo();
+        long horasFixaCalculadas = calculaHorasEntreDatas(estacionamento.getDataHoraEntrada(), estacionamento.getDataHoraEntrada().plusHours(horasFixa));
+
+        BigDecimal valorTotal;
+
+        if (horasTotais <= horasFixaCalculadas) {
+            valorTotal = VALOR_HORA_TIPO_FIXO.multiply(BigDecimal.valueOf(horasFixa));
         } else {
-            horasCalculadas = VALOR_HORA_TIPO_FIXO;
-            return horasCalculadas;
+            BigDecimal valorFixo = VALOR_HORA_TIPO_FIXO.multiply(BigDecimal.valueOf(horasFixa));
+            long horasAdicionais = calculaHorasEntreDatas(estacionamento.getDataHoraEntrada().plusHours(horasFixa), estacionamento.getDataHoraSaida());
+            BigDecimal valorAdicional = VALOR_HORA_TIPO_VARIAVEL.multiply(BigDecimal.valueOf(horasAdicionais));
+            valorTotal = valorFixo.add(valorAdicional);
         }
+
+        return valorTotal.longValue();
+    }
+
+    private long calculaHorasEstacionadasAdicional(final Estacionamento estacionamento) {
+        var horaAdicional = estacionamento.getDataHoraEntrada().plusHours(estacionamento.getTempoFixo());
+        var valorCalculoAdicional = calculaHorasEntreDatas(horaAdicional, estacionamento.getDataHoraSaida());
+        return Math.max(valorCalculoAdicional, 0);
     }
 }
