@@ -1,4 +1,4 @@
-package com.fiap.ms_parquimetro_control.repository.dto;
+package com.fiap.ms_parquimetro_control.client.dto;
 
 import lombok.Builder;
 import lombok.Getter;

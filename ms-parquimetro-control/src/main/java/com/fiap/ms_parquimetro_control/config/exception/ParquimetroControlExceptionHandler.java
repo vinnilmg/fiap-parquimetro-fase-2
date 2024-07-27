@@ -19,8 +19,9 @@ public class ParquimetroControlExceptionHandler {
     @ExceptionHandler({
             CarAlreadyParkedException.class,
             InvalidParkingStatusException.class,
-            InvalidPaymentTypePix.class,
-            InvalidPaymentType.class
+            InvalidPaymentTypePixException.class,
+            InvalidPaymentTypeException.class,
+            InvalidParkingTypeException.class
     })
     public ResponseEntity<ApiError> handleBadRequestError(
             final Exception e, final WebRequest request
