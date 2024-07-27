@@ -9,6 +9,6 @@ public class UUIDClienteInvalidException extends CustomNotFoundException {
 
 
     public UUIDClienteInvalidException(String id) {
-        super(String.format(MESSAGE, id),errorCode);
+        super(String.format(MESSAGE, id), errorCode);
     }
 }

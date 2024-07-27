@@ -16,7 +16,6 @@ public class CustomErrorResponse {
     private String message;
     private String timestamp;
 
-
     public CustomErrorResponse(String errorCode, String message) {
         this.errorCode = errorCode;
         this.message = message;

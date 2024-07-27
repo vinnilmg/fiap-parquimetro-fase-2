@@ -38,6 +38,7 @@ services:
     environment:
       - MONGODB_HOST=mongodb:27017
       - JAVA_TOOLS_OPTIONS=-Dfile.encoding=UTF-8
+      - BATCH_ACTIVE=true
 
   ms-parquimetro-cadastro:
     image: vinnilmg/ms-parquimetro-cadastro:latest
