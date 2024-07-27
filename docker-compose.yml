@@ -1,0 +1,62 @@
+name: fiap-parquimetro
+
+services:
+  mongodb:
+    image: mongo:latest
+    restart: always
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongodb:/data/db
+
+  redis-server:
+    container_name: redis
+    image: redis
+    ports:
+      - "6379:6379"
+
+  postgresql:
+    image: postgres:latest
+    restart: always
+    container_name: postgresql
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: 123456
+      POSTGRES_DB: parquimetro_cadastro_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres:/var/lib/postgresql/data
+
+  ms-parquimetro-control:
+    image: vinnilmg/ms-parquimetro-control:latest
+    ports:
+      - "8091:8091"
+    depends_on:
+      - mongodb
+      - redis-server
+    environment:
+      - MONGODB_HOST=mongodb:27017
+      - JAVA_TOOLS_OPTIONS=-Dfile.encoding=UTF-8
+
+  ms-parquimetro-cadastro:
+    image: vinnilmg/ms-parquimetro-cadastro:latest
+    ports:
+      - "8090:8090"
+    depends_on:
+      - postgresql
+    environment:
+      - POSTGRES_HOST=postgresql
+      - POSTGRES_PORT=5432
+      - POSTGRES_DB=parquimetro_cadastro_db
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=123456
+
+networks:
+  default:
+    external: true
+    name: parquimetro-network
+
+volumes:
+  mongodb:
+  postgres:

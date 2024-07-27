@@ -1,6 +1,5 @@
 package com.fiap.ms_parquimetro_cadastro.controller;
 
-import com.fiap.ms_parquimetro_cadastro.controller.mapper.ClienteMapper;
 import com.fiap.ms_parquimetro_cadastro.controller.response.ClienteResponse;
 import com.fiap.ms_parquimetro_cadastro.controller.resquest.ClienteRequest;
 import com.fiap.ms_parquimetro_cadastro.service.ClienteService;
@@ -14,13 +13,10 @@ import java.util.List;
 @RestController
 @RequestMapping("/cliente")
 public class ClienteController {
-
     private final ClienteService clienteService;
-    private final ClienteMapper clienteMapper;
 
-    public ClienteController(ClienteService clienteService, ClienteMapper clienteMapper) {
+    public ClienteController(ClienteService clienteService) {
         this.clienteService = clienteService;
-        this.clienteMapper = clienteMapper;
     }
 
     @GetMapping

@@ -10,8 +10,6 @@ public interface EstacionamentoDao {
 
     Optional<Estacionamento> findPendingPaymentParkingByPlaca(String placa);
 
-    List<Estacionamento> findByPlaca(String placa);
-
     List<Estacionamento> findByStatus(String status);
 
     List<Estacionamento> findAll();
