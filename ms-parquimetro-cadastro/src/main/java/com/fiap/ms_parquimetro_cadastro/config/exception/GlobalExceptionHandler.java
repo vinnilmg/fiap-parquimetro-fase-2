@@ -8,10 +8,14 @@ import com.fiap.ms_parquimetro_cadastro.exception.cliente.CnhJaUtilizadaExceptio
 import com.fiap.ms_parquimetro_cadastro.exception.cliente.UUIDClienteInvalidException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.context.request.WebRequest;
+
+import java.util.HashMap;
+import java.util.Map;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
@@ -27,10 +31,20 @@ public class GlobalExceptionHandler {
             PlacaJaUtilizadaException.class,
             UUIDClienteInvalidException.class,
             CnhJaUtilizadaException.class,
+            MethodArgumentNotValidException.class
     })
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ResponseEntity<CustomErrorResponse> handleBadRequestException(Exception e) {
-        CustomErrorResponse response = new CustomErrorResponse(HttpStatus.BAD_REQUEST.getReasonPhrase(), e.getMessage());
+        String message = e.getMessage();
+        if (e instanceof MethodArgumentNotValidException) {
+            MethodArgumentNotValidException manve = (MethodArgumentNotValidException) e;
+            Map<String, String> errors = new HashMap<>();
+            manve.getBindingResult().getFieldErrors().forEach(error ->
+                    errors.put(error.getField(), error.getDefaultMessage())
+            );
+            message = errors.toString();
+        }
+        CustomErrorResponse response = new CustomErrorResponse(HttpStatus.BAD_REQUEST.getReasonPhrase(), message);
         return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
     }
 

@@ -6,8 +6,11 @@ import com.fiap.ms_parquimetro_cadastro.controller.resquest.ClienteRequest;
 import com.fiap.ms_parquimetro_cadastro.exception.cliente.ClienteCnhNotFoundException;
 import com.fiap.ms_parquimetro_cadastro.exception.cliente.CnhJaUtilizadaException;
 import com.fiap.ms_parquimetro_cadastro.exception.cliente.UUIDClienteInvalidException;
+import com.fiap.ms_parquimetro_cadastro.repository.CarroRepository;
 import com.fiap.ms_parquimetro_cadastro.repository.ClienteRepository;
 import com.fiap.ms_parquimetro_cadastro.service.ClienteService;
+import jakarta.transaction.Transactional;
+import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import java.util.List;
 
@@ -79,11 +82,11 @@ public class ClienteServiceImpl implements ClienteService {
     }
 
     @Override
+    @Transactional
     public void deleteById(String UUID) {
+        carroRepository.deleteCarroByClienteId(fromString(UUID));
         clienteRepository.deleteById(fromString(UUID));
     }
-
-
 
 
 }
