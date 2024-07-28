@@ -18,7 +18,7 @@ public interface CarroService {
 
     public CarroResponse save(CarroRequest carro);
 
-    public CarroResponse update(String UUID, CarroUpdateRequest carro) throws IllegalAccessException;
+    public CarroResponse update(String UUID, CarroUpdateRequest carro);
 
     public MessageResponse deleteById(String UUID);
 

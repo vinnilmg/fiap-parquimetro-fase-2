@@ -46,13 +46,13 @@ public class CarroController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<CarroResponse> updateCarro(@PathVariable(value = "id")  String id,@Valid @RequestBody CarroUpdateRequest carroUpdateRequest) throws IllegalAccessException {
+    public ResponseEntity<CarroResponse> updateCarro(@PathVariable String id,@Valid @RequestBody CarroUpdateRequest carroUpdateRequest) throws IllegalAccessException {
         CarroResponse updatedCarro = carroService.update(id, carroUpdateRequest);
         return ResponseEntity.ok(updatedCarro);
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<MessageResponse> deleteCarro(@PathVariable(value = "id")  String id) {
+    public ResponseEntity<MessageResponse> deleteCarro(@PathVariable String id) {
         MessageResponse messageResponse =  carroService.deleteById(id);
         return ResponseEntity.ok(messageResponse);
     }

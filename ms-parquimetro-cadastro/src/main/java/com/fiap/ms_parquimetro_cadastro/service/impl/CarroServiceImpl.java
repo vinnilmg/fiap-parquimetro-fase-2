@@ -75,9 +75,8 @@ public class CarroServiceImpl implements CarroService {
 
         return carroMapper.CarroEntityToResponse(carroRepository.save(carroMapper.CarroRequestToEntity(carro)));
     }
-    @Transactional
     @Override
-    public CarroResponse update(String UUID, CarroUpdateRequest carro) throws IllegalAccessException {
+    public CarroResponse update(String UUID, CarroUpdateRequest carro) {
         isValidUUID(UUID);
         BooleanFunctions.validateFalse(carroRepository.existsById(fromString(UUID)),new CarroNotFoundException(UUID));
         BooleanFunctions.validateTrue(carroRepository.existsCarroByPlaca(carro.getPlaca()), new PlacaJaUtilizadaException(carro.getPlaca()));

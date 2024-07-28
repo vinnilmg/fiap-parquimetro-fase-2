@@ -10,9 +10,7 @@ public interface CarroRepository extends JpaRepository<Carro, UUID> {
 
     boolean existsCarroByPlaca(String placa);
 
-
     void deleteCarroByClienteId(UUID clienteId);
-
 
     Optional<Carro> findCarroByPlaca(String placa);
 
