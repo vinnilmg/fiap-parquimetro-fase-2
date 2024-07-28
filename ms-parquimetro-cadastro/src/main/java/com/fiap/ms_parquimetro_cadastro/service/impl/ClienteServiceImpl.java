@@ -25,10 +25,11 @@ public class ClienteServiceImpl implements ClienteService {
 
     private final ClienteRepository clienteRepository;
     private final ClienteMapper clienteMapper;
-
-    public ClienteServiceImpl(ClienteRepository clienteRepository, ClienteMapper clienteMapper) {
+    private final CarroRepository carroRepository;
+    public ClienteServiceImpl(ClienteRepository clienteRepository, ClienteMapper clienteMapper, CarroRepository carroRepository) {
         this.clienteRepository = clienteRepository;
         this.clienteMapper = clienteMapper;
+        this.carroRepository = carroRepository;
     }
 
     @Override
