@@ -2,7 +2,10 @@ package com.fiap.ms_parquimetro_cadastro.controller;
 
 import com.fiap.ms_parquimetro_cadastro.controller.mapper.CarroMapper;
 import com.fiap.ms_parquimetro_cadastro.controller.response.CarroResponse;
+import com.fiap.ms_parquimetro_cadastro.controller.response.MessageResponse;
 import com.fiap.ms_parquimetro_cadastro.controller.resquest.CarroRequest;
+import com.fiap.ms_parquimetro_cadastro.controller.resquest.CarroUpdateRequest;
+import com.fiap.ms_parquimetro_cadastro.repository.entity.Carro;
 import com.fiap.ms_parquimetro_cadastro.service.CarroService;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
@@ -43,14 +46,14 @@ public class CarroController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<CarroResponse> updateCarro(@PathVariable String id,@Valid @RequestBody CarroRequest carroRequest) {
-        CarroResponse updatedCarro = carroService.update(id, carroRequest);
+    public ResponseEntity<CarroResponse> updateCarro(@PathVariable String id,@Valid @RequestBody CarroUpdateRequest carroUpdateRequest) throws IllegalAccessException {
+        CarroResponse updatedCarro = carroService.update(id, carroUpdateRequest);
         return ResponseEntity.ok(updatedCarro);
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteCarro(@PathVariable String id) {
-        carroService.deleteById(id);
-        return ResponseEntity.noContent().build();
+    public ResponseEntity<MessageResponse> deleteCarro(@PathVariable String id) {
+        MessageResponse messageResponse =  carroService.deleteById(id);
+        return ResponseEntity.ok(messageResponse);
     }
 }
