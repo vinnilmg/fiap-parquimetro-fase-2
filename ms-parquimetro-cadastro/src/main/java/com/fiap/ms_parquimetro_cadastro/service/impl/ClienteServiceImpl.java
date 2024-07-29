@@ -2,15 +2,19 @@ package com.fiap.ms_parquimetro_cadastro.service.impl;
 
 import com.fiap.ms_parquimetro_cadastro.controller.mapper.ClienteMapper;
 import com.fiap.ms_parquimetro_cadastro.controller.response.ClienteResponse;
+import com.fiap.ms_parquimetro_cadastro.controller.response.MessageResponse;
 import com.fiap.ms_parquimetro_cadastro.controller.resquest.ClienteRequest;
+import com.fiap.ms_parquimetro_cadastro.exception.carro.CarroNotFoundException;
 import com.fiap.ms_parquimetro_cadastro.exception.cliente.ClienteCnhNotFoundException;
+import com.fiap.ms_parquimetro_cadastro.exception.cliente.ClienteNotFoundException;
 import com.fiap.ms_parquimetro_cadastro.exception.cliente.CnhJaUtilizadaException;
 import com.fiap.ms_parquimetro_cadastro.exception.cliente.UUIDClienteInvalidException;
 import com.fiap.ms_parquimetro_cadastro.repository.CarroRepository;
 import com.fiap.ms_parquimetro_cadastro.repository.ClienteRepository;
 import com.fiap.ms_parquimetro_cadastro.service.ClienteService;
+import com.fiap.ms_parquimetro_cadastro.utils.BooleanFunctions;
+import com.fiap.ms_parquimetro_cadastro.utils.ReflectionMethod;
 import jakarta.transaction.Transactional;
-import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import java.util.List;
 
@@ -45,7 +49,7 @@ public class ClienteServiceImpl implements ClienteService {
         isValidUUID(UUID);
         return clienteRepository.findById(fromString(UUID))
                 .map(clienteMapper::ClienteEntityToResponse)
-                .orElseThrow(() -> new UUIDClienteInvalidException(UUID));
+                .orElseThrow(() -> new ClienteNotFoundException(UUID));
     }
 
     @Override
@@ -57,9 +61,7 @@ public class ClienteServiceImpl implements ClienteService {
 
     @Override
     public ClienteResponse save(ClienteRequest cliente) {
-        if (clienteRepository.existsClienteByCnh(Objects.requireNonNull(cliente.getCnh()))) {
-            throw new CnhJaUtilizadaException(cliente.getCnh());
-        }
+        BooleanFunctions.validateTrue(clienteRepository.existsClienteByCnh(cliente.getCnh()), new CnhJaUtilizadaException(cliente.getCnh()));
 
         return clienteMapper.ClienteEntityToResponse(
                 clienteRepository.save
@@ -68,26 +70,26 @@ public class ClienteServiceImpl implements ClienteService {
 
     @Override
     public ClienteResponse update(String UUID, ClienteRequest cliente) {
-        if (!clienteRepository.existsById(fromString(UUID))) {
-            throw new UUIDClienteInvalidException(UUID);
-        }
+        isValidUUID(UUID);
+        BooleanFunctions.validateFalse(clienteRepository.existsById(fromString(UUID)), new ClienteNotFoundException(UUID));
+        BooleanFunctions.validateTrue(clienteRepository.existsClienteByCnh(cliente.getCnh()), new CnhJaUtilizadaException(cliente.getCnh()));
 
         var clienteToUpdate = clienteRepository.findById(fromString(UUID)).get();
-        clienteToUpdate.setNome(cliente.getNome());
-        clienteToUpdate.setCnh(cliente.getCnh());
-        clienteToUpdate.setTelefone(cliente.getTelefone());
-        clienteToUpdate.setEmail(cliente.getEmail());
-        clienteToUpdate.setFormaPagamentoPreferida(cliente.getFormaPagamentoPreferida());
+        ReflectionMethod.updateEntity(cliente, clienteToUpdate);
 
         return clienteMapper.ClienteEntityToResponse(clienteRepository.save(clienteToUpdate));
     }
 
     @Override
     @Transactional
-    public void deleteById(String UUID) {
-        carroRepository.deleteCarroByClienteId(fromString(UUID));
+    public MessageResponse deleteById(String UUID) {
+        isValidUUID(UUID);
+        carroRepository.findById(fromString(UUID)).orElseThrow(() -> new CarroNotFoundException(UUID));
+        clienteRepository.findById(fromString(UUID)).orElseThrow(() -> new ClienteNotFoundException(UUID));
         clienteRepository.deleteById(fromString(UUID));
+        return new MessageResponse(String.format("O cliente com o id %s foi deletado com sucesso.", UUID));
     }
+
 
 
 }

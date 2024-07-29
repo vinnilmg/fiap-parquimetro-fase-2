@@ -7,10 +7,9 @@ import lombok.Getter;
 public class CnhJaUtilizadaException extends CustomNotFoundException {
 
     private static final String MESSAGE = "O cliente com a CNH %s já está cadastrado.";
-    private static final String errorCode = "CNH já utilizada.";
 
     public CnhJaUtilizadaException(String cnh) {
-        super(errorCode, String.format(MESSAGE, cnh));
+        super("", String.format(MESSAGE, cnh));
     }
 
 
