@@ -3,6 +3,7 @@ package com.fiap.ms_parquimetro_cadastro.service;
 import com.fiap.ms_parquimetro_cadastro.controller.response.ClienteResponse;
 import com.fiap.ms_parquimetro_cadastro.controller.response.MessageResponse;
 import com.fiap.ms_parquimetro_cadastro.controller.resquest.ClienteRequest;
+import com.fiap.ms_parquimetro_cadastro.controller.resquest.ClienteUpdateRequest;
 
 import java.util.List;
 
@@ -16,7 +17,7 @@ public interface ClienteService {
 
     public ClienteResponse save(ClienteRequest cliente);
 
-    public ClienteResponse update(String UUID, ClienteRequest cliente);
+    public ClienteResponse update(String UUID, ClienteUpdateRequest cliente);
 
     public MessageResponse deleteById(String UUID);
 }
