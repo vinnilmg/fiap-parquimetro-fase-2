@@ -4,6 +4,7 @@ import com.fiap.ms_parquimetro_cadastro.controller.mapper.ClienteMapper;
 import com.fiap.ms_parquimetro_cadastro.controller.response.ClienteResponse;
 import com.fiap.ms_parquimetro_cadastro.controller.response.MessageResponse;
 import com.fiap.ms_parquimetro_cadastro.controller.resquest.ClienteRequest;
+import com.fiap.ms_parquimetro_cadastro.controller.resquest.ClienteUpdateRequest;
 import com.fiap.ms_parquimetro_cadastro.exception.carro.CarroNotFoundException;
 import com.fiap.ms_parquimetro_cadastro.exception.cliente.ClienteCnhNotFoundException;
 import com.fiap.ms_parquimetro_cadastro.exception.cliente.ClienteNotFoundException;
@@ -69,10 +70,9 @@ public class ClienteServiceImpl implements ClienteService {
     }
 
     @Override
-    public ClienteResponse update(String UUID, ClienteRequest cliente) {
+    public ClienteResponse update(String UUID, ClienteUpdateRequest cliente) {
         isValidUUID(UUID);
         BooleanFunctions.validateFalse(clienteRepository.existsById(fromString(UUID)), new ClienteNotFoundException(UUID));
-        BooleanFunctions.validateTrue(clienteRepository.existsClienteByCnh(cliente.getCnh()), new CnhJaUtilizadaException(cliente.getCnh()));
 
         var clienteToUpdate = clienteRepository.findById(fromString(UUID)).get();
         ReflectionMethod.updateEntity(cliente, clienteToUpdate);
@@ -84,7 +84,7 @@ public class ClienteServiceImpl implements ClienteService {
     @Transactional
     public MessageResponse deleteById(String UUID) {
         isValidUUID(UUID);
-        carroRepository.findById(fromString(UUID)).orElseThrow(() -> new CarroNotFoundException(UUID));
+        carroRepository.deleteCarroByClienteId(fromString(UUID));
         clienteRepository.findById(fromString(UUID)).orElseThrow(() -> new ClienteNotFoundException(UUID));
         clienteRepository.deleteById(fromString(UUID));
         return new MessageResponse(String.format("O cliente com o id %s foi deletado com sucesso.", UUID));

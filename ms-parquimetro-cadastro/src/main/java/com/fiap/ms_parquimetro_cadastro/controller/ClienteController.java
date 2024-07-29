@@ -3,6 +3,7 @@ package com.fiap.ms_parquimetro_cadastro.controller;
 import com.fiap.ms_parquimetro_cadastro.controller.response.ClienteResponse;
 import com.fiap.ms_parquimetro_cadastro.controller.response.MessageResponse;
 import com.fiap.ms_parquimetro_cadastro.controller.resquest.ClienteRequest;
+import com.fiap.ms_parquimetro_cadastro.controller.resquest.ClienteUpdateRequest;
 import com.fiap.ms_parquimetro_cadastro.service.ClienteService;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
@@ -45,8 +46,8 @@ public class ClienteController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<ClienteResponse> updateCliente(@PathVariable String id, @Valid @RequestBody ClienteRequest clienteRequest) {
-        ClienteResponse updatedCliente = clienteService.update(id, clienteRequest);
+    public ResponseEntity<ClienteResponse> updateCliente(@PathVariable String id, @Valid @RequestBody ClienteUpdateRequest clienteUpdateRequest) {
+        ClienteResponse updatedCliente = clienteService.update(id, clienteUpdateRequest);
         return ResponseEntity.ok(updatedCliente);
     }
 
