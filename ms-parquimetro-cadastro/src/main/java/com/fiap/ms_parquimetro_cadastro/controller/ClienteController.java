@@ -1,6 +1,7 @@
 package com.fiap.ms_parquimetro_cadastro.controller;
 
 import com.fiap.ms_parquimetro_cadastro.controller.response.ClienteResponse;
+import com.fiap.ms_parquimetro_cadastro.controller.response.MessageResponse;
 import com.fiap.ms_parquimetro_cadastro.controller.resquest.ClienteRequest;
 import com.fiap.ms_parquimetro_cadastro.service.ClienteService;
 import jakarta.validation.Valid;
@@ -50,8 +51,8 @@ public class ClienteController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteCliente(@PathVariable String id) {
-        clienteService.deleteById(id);
-        return ResponseEntity.noContent().build();
+    public ResponseEntity<MessageResponse> deleteCliente(@PathVariable String id) {
+        MessageResponse messageResponse = clienteService.deleteById(id);
+        return ResponseEntity.ok(messageResponse);
     }
 }

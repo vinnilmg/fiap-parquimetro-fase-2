@@ -3,6 +3,7 @@ package com.fiap.ms_parquimetro_cadastro.config.exception;
 import com.fiap.ms_parquimetro_cadastro.exception.carro.CarroNotFoundException;
 import com.fiap.ms_parquimetro_cadastro.exception.carro.CarroPlacaNotFoundException;
 import com.fiap.ms_parquimetro_cadastro.exception.carro.PlacaJaUtilizadaException;
+import com.fiap.ms_parquimetro_cadastro.exception.cliente.ClienteCnhNotFoundException;
 import com.fiap.ms_parquimetro_cadastro.exception.cliente.ClienteNotFoundException;
 import com.fiap.ms_parquimetro_cadastro.exception.cliente.CnhJaUtilizadaException;
 import com.fiap.ms_parquimetro_cadastro.exception.cliente.UUIDClienteInvalidException;
@@ -20,7 +21,7 @@ import java.util.Map;
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
-    @ExceptionHandler({CarroNotFoundException.class, ClienteNotFoundException.class, CarroPlacaNotFoundException.class})
+    @ExceptionHandler({CarroNotFoundException.class, ClienteNotFoundException.class, CarroPlacaNotFoundException.class, ClienteCnhNotFoundException.class})
     @ResponseStatus(HttpStatus.NOT_FOUND)
     public ResponseEntity<CustomErrorResponse> handleNotFoundException(Exception ex) {
         CustomErrorResponse response = new CustomErrorResponse(HttpStatus.NOT_FOUND.getReasonPhrase(), ex.getMessage());
